@@ -1,0 +1,1 @@
+Basado en Django contrib, el proposito de este proyecto es modificar el admin de django para la generacion automatica de codigo ( o la interpretacion ) de modelos.
