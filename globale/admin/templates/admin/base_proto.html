@@ -11,9 +11,6 @@
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 
         <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" /> 
-<!--         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/styles.css" />   -->
-<!--         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/famfamfam.css" />   -->
-        
         <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script> 
         {% if debug %}
             <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script> 
@@ -28,6 +25,10 @@
 {% load i18n %}
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+
+<!-- base_site -->
+
+
 
 <!-- DGT Rutinas de llamado -->
     <!-- ExtJS library -->
@@ -271,13 +272,13 @@ Ext.reg("DjangoForm", Ext.ux.DjangoForm);
 Ext.reg("DjangoField", Ext.ux.DjangoField);
          
 // ---------------------------------------------------------------------        
-// AQUI COMIENZA EL CODIGO DE LA FORMA COMO TAL,  AUNQUE EL FACTORY TAMBIEN 
+// DGT:  AQUI COMIENZA EL CODIGO DE LA FORMA COMO TAL,  AUNQUE EL FACTORY TAMBIEN 
 // PODRIA SER PARTE DE LAS LIBRERIAS  
 // ---------------------------------------------------------------------        
         
-function GridConfigFactory(version) {
+function GridConfigFactory(protoEntityName) {
            
-            var users_grid = new Ext.ux.AutoGrid({
+            var protoGrid = new Ext.ux.AutoGrid({
                 autoWidth:true
                 ,border:false
                 ,pagesize:5
@@ -300,13 +301,13 @@ function GridConfigFactory(version) {
                 ,store:new Ext.data.JsonStore({
                     autoLoad:true
                     ,baseParams:{}
-                    ,remoteSort:true
+                    ,remoteSort:false
                     ,sortInfo: {
                                 field: 'id',
                                 direction: 'DESC'
                             }
                     ,proxy:new Ext.data.HttpProxy({
-                        url:'apps/main/users_grid/' + version
+                        url:'protoExtjsGridDefinition/?' + protoEntityName
                         ,method:'POST'
                     })
                     ,reader: new Ext.data.JsonReader({
@@ -317,7 +318,7 @@ function GridConfigFactory(version) {
                 })
             });
             
-            return users_grid;
+            return protoGrid;
         
         }
 
@@ -327,7 +328,7 @@ function UserEditor(sender, pk) {
                 ,intro:'this is a generated form'
                 ,showButtons:true
                 ,showSuccessMessage:false
-                ,url:'apps/main/user_edit' 
+                ,url:'protoExtjsFormDefinition' 
                 ,baseParamsLoad:{pk:pk}
                 ,width:400
                 ,scope:this
@@ -340,7 +341,7 @@ function UserEditor(sender, pk) {
 
            var winEditor = new Ext.Window({
             items:editor
-            ,title:'generated form example'
+            ,title:'generated proto Form'
            })
            
              editor.on('submitSuccess', function() {
@@ -361,12 +362,12 @@ function UserEditor(sender, pk) {
 // ------------------------------------------
 
 
-function newDjangoGrid(title, djangoEntityName) {
-   var customgrid = GridConfigFactory(djangoEntityName);
+function newDjangoGrid(protoEntityName) {
+   var customgrid = GridConfigFactory(protoEntityName);
    
    // Crea una ventana  
    var newWin2 = new Ext.Window({
-        title: title
+        title: protoEntityName
         ,width:600
         ,layout:'fit'
         ,height:300
