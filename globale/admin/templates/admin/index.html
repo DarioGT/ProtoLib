@@ -1,11 +1,12 @@
-{% extends "admin/base_site.html" %}
+index 
+{% extends "admin/base_proto.html" %}
 {% load i18n %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />{% endblock %}
 
 {% block coltype %}colMS{% endblock %}
 
-{% block bodyclass %}dashboard{% endblock %}
+{% block bodyclass %}dashboardProto{% endblock %}
 
 {% block breadcrumbs %}{% endblock %}
 
@@ -20,22 +21,27 @@
         {% for model in app.models %}
             <tr>
             {% if model.perms.change %}
-                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
+                <th scope="row" WIDTH="75%"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
             {% else %}
-                <th scope="row">{{ model.name }}</th>
+                <th scope="row" WIDTH="75%">{{ model.name }}</th>
             {% endif %}
 
             {% if model.perms.add %}
-                <td><a href="{{ model.admin_url }}add/" class="addlink">{% trans 'Add' %}</a></td>
+                <td WIDTH="10%"><a href="{{ model.admin_url }}add/" class="addlink">{% trans 'Add' %}</a></td>
             {% else %}
-                <td>&nbsp;</td>
+                <td WIDTH="10%">&nbsp;</td>
             {% endif %}
 
             {% if model.perms.change %}
-                <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
+                <td WIDTH="10%"><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
             {% else %}
-                <td>&nbsp;</td>
+                <td WIDTH="10%">&nbsp;</td>
             {% endif %}
+			<!-- DGT:  Agrega el boton para cargar el JS -->
+            <td WIDTH="5%">
+            	<input type="button" value="*" onclick="newDjangoGrid('{{ model.name }}')" />
+            </td>
+
             </tr>
         {% endfor %}
         </table>
@@ -77,4 +83,10 @@
             {% endif %}
     </div>
 </div>
+
+
 {% endblock %}
+
+<div id='genericGrid'></div>
+<div id='examples' style='margin:0 50 0 50'></div>
+<div id='genericPanel'></div>

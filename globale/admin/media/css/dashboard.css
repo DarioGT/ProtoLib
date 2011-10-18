@@ -13,6 +13,22 @@
     padding-right: .6em;
 }
 
+/* DGT */
+
+.dashboardProto .module table th {
+    width: 100%;
+}
+
+.dashboardProto .module table td {
+    white-space: nowrap;
+}
+
+.dashboardProto .module table td a {
+    display: block;
+    padding-right: .6em;
+}
+
+
 /* RECENT ACTIONS MODULE */
 
 .module ul.actionlist {

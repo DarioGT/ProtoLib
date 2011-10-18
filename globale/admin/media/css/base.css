@@ -712,6 +712,12 @@ table#change-history tbody th {
     width: 500px;
 }
 
+/* DGT */
+
+.dashboardProto #content {
+    width: 500px;
+}
+
 /* HEADER */
 
 #header {

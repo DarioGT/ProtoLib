@@ -1,0 +1,447 @@
+{% load url from future %}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE|default:"en-us" }}" xml:lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<title>{% block title %}{% endblock %}</title>
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
+{% block extrastyle %}{% endblock %}
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{% admin_media_prefix %}css/ie.css{% endblock %}" /><![endif]-->
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";</script>
+{% block extrahead %}{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+
+        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" /> 
+<!--         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/styles.css" />   -->
+<!--         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/famfamfam.css" />   -->
+        
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script> 
+        {% if debug %}
+            <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script> 
+        {% else %}
+            <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all.js"></script> 
+        {% endif %}
+        
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/src/locale/ext-lang-fr.js"></script> 
+
+
+</head>
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+
+<!-- DGT Rutinas de llamado -->
+    <!-- ExtJS library -->
+	{% if debug %}
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script>
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/examples/ux/ux-all-debug.js"></script>
+    {% else %}
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all.js"></script>
+        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/examples/ux/ux-all.js"></script>
+    {% endif %}
+    
+    <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/src/locale/ext-lang-fr.js"></script>
+
+<!-- DGT:  Librerias locales, NO DEBEN SER CARGADAS directamente en la pagina    -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/Ext.ux.AutoGridPanel.js"></script> 
+  
+<script language="javascript">
+//  ----------------------------------------------------------------------------------------------------------
+    
+Ext.ux.AutoGrid = Ext.extend(Ext.ux.AutoGridPanel, {
+     showBbar:false
+    ,stripeRows:true
+    ,deferredRender :true
+    ,autoSave:false
+    ,remoteSort:true
+    ,sortInfo:{}
+    ,initComponent:function() {
+        this.pagesize = this.pagesize || 10;
+        
+        if (this.showBbar) this.bbar = new Ext.PagingToolbar({
+                pageSize: this.pagesize,
+                store:  this.store,
+                displayInfo: true,
+                displayMsg: '{0} à {1} sur {2}',
+                emptyMsg: "Aucun élément à afficher"
+        });
+        
+        var config = {  
+            store:  this.store
+            ,stripeRows: true
+            ,loadMask: true
+            ,autoSave: this.autoSave
+        };
+        Ext.apply(this.initialConfig, config);
+        Ext.ux.AutoGrid.superclass.initComponent.apply(this, arguments);
+
+    } 
+
+ 
+}); 
+Ext.reg('AutoGrid', Ext.ux.AutoGrid); 
+        
+
+        
+//  -----------------------------------------------------
+
+// dynamic load of a server side form
+
+Ext.ux.DjangoForm = Ext.extend(Ext.FormPanel, {
+ 
+        url:null
+        ,baseParamsLoad:null
+        ,callback:null
+        ,scope:null
+        
+        ,border:false
+        ,custom_config:null
+        ,default_config:null
+        ,showButtons:true
+        ,showSuccessMessage:'Formulaire bien enregistre'
+        
+        ,initComponent:function() {
+            if (this.showButtons) {
+                this.buttons = [
+                     {name:'submit', xtype:'button', iconCls:'icon-accept', text:'enregistrer', scope:this, handler:function(args) {this.submitForm();}}
+                    ,{name:'reset', xtype:'button', iconCls:'icon-cancel', text:'reset',  scope:this, handler:function(args) {this.resetForm();}}
+                ]
+                }
+                
+                this.items = {border:false, 'html':'<img style="vertical-align:middle" src="http://extjs.cachefly.net/ext-3.4.0/resources/images/default/shared/large-loading.gif"/>&nbsp;&nbsp;&nbsp;&nbsp;loading...'}
+                    this.getDefaultButton = function(name) {
+                    
+                    }
+                    this.gotFormCallback = function(response, options) {
+                        
+                         var res = Ext.decode(response.responseText);
+                         this.default_config = res;
+
+                            this.removeAll();
+   
+                             if (this.custom_config) {
+                                // add custom form config to this formpanel
+                        var newconf = this.custom_config.createDelegate(this, [this])();
+                        for (var i=0;i<newconf.items.length;i++) {
+                            this.add(Ext.ComponentMgr.create(newconf.items[i]));
+                        }
+                        
+                        // auto add hidden fields from django form if needed
+                            for (var i=0;i<this.default_config.length;i++) {
+                                if (this.default_config[i].xtype == 'hidden') {
+                                   this.add(Ext.ComponentMgr.create(this.default_config[i]));
+                                }
+                            }
+                                //this.default_config = res;
+                    }
+                    else {
+                        
+                        if (this.intro) {
+                            this.add({html:this.intro, style:'padding-bottom:10px;padding-top:10px;font-size:14px', border:false});
+                        }
+                        if (this.startItems) {
+                            this.add(this.startItems);
+                        }
+                        
+                      //  Ext.apply(this, this.default_config);
+                         
+                        for (var i=0;i<res.length;i++) {
+                            this.add(Ext.ComponentMgr.create(res[i]));
+                        }
+                    }
+                    //finally callback your function when ready
+                   if (this.callback) {
+                      this.callback.createDelegate(this.scope, [this])();
+                    }
+             }
+             
+             var o = {}
+
+             if (this.baseParamsLoad) Ext.apply(o, this.baseParamsLoad);
+             Ext.ux.DjangoForm.superclass.initComponent.apply(this, arguments);
+             this.addEvents('submitSuccess', 'submitError');
+                 
+             Ext.Ajax.request({
+                url:this.url
+                ,params:o
+                ,method:'GET'
+                ,scope:this
+                ,success:this.gotFormCallback
+                ,failure:this.gotFormCallback
+            });
+            
+            
+           
+        }
+      ,submitSuccess:function() {
+             this.fireEvent('submitSuccess');
+             if (this.showSuccessMessage) {
+                 Ext.Msg.show({
+                   title:'Succes',
+                   msg: this.showSuccessMessage,
+                   buttons: Ext.Msg.OK,               
+                   icon: Ext.MessageBox.INFO 
+                });
+           }
+        }
+        ,submitError:function(msg) {
+        
+                this.fireEvent('submitError', msg);
+                Ext.Msg.show({
+                       title:'Erreur',
+                       msg: 'Impossible de valider : <br>' + msg + '<br>',
+                       buttons: Ext.Msg.OK,               
+                       icon: Ext.MessageBox.WARNING 
+                    });
+        }
+        
+        ,validResponse:function(form, action) {
+                for (btn in this.buttons) {
+                    var butt = this.buttons[btn];
+                    if (butt.name == 'submit') butt.enable();
+                }
+               if (action && action.result && action.result.success) {
+                   this.submitSuccess();
+               }
+               else {
+                    this.submitError(action && action.result && action.result.msg || 'erreur');
+                    
+               }
+               
+        }
+        ,invalid:function() {
+        //    console.log('invalid: ', this.getForm().getValues());
+             Ext.Msg.show({
+               title:'Erreur',
+               msg: 'Impossible de valider : formulaire invalide',
+               buttons: Ext.Msg.OK,               
+               icon: Ext.MessageBox.WARNING 
+            });
+        }
+        ,resetForm:function() {
+            console.log('resetForm');
+            this.getForm().reset();
+        }
+        
+        ,submitForm:function() {
+            //console.log('submitForm');
+            if (this.getForm().isValid()) {
+                for (btn in this.buttons) {
+                    if (this.buttons[btn].name == 'submit') {
+                        this.buttons[btn].disable();
+                        }
+                }
+                this.getForm().submit({scope:this, success:this.validResponse,failure:this.validResponse});
+            } else {
+                // console.log('invalid form!');
+                 // var items = this.getForm().items.items;
+                // for (f in items) {
+                    // console.log(f, items[f], items[f].isValid());
+                // }
+                        this.invalid()
+                        }
+                   }                      
+                
+             });
+Ext.ux.DjangoField = function(config) {
+            //  console.log(config);
+  //         console.log(this);
+        var items = config.django_form.default_config;
+        
+        for (var i=0;i<items.length;i++) {
+            if (items[i].name == config.name) {
+                
+                var bConfig = items[i];
+                // prevent infinite loop
+                
+                if (config.xtype2) {
+                    config.xtype = config.xtype2
+                    }
+               else {
+                delete config.xtype
+               }
+              
+                Ext.apply(bConfig, config);
+              // console.log(bConfig); 
+                
+                return Ext.ComponentMgr.create(bConfig);     
+                }
+        }
+}
+Ext.reg("DjangoForm", Ext.ux.DjangoForm);
+Ext.reg("DjangoField", Ext.ux.DjangoField);
+         
+// ---------------------------------------------------------------------        
+// AQUI COMIENZA EL CODIGO DE LA FORMA COMO TAL,  AUNQUE EL FACTORY TAMBIEN 
+// PODRIA SER PARTE DE LAS LIBRERIAS  
+// ---------------------------------------------------------------------        
+        
+function GridConfigFactory(version) {
+           
+            var users_grid = new Ext.ux.AutoGrid({
+                autoWidth:true
+                ,border:false
+                ,pagesize:5
+                ,tbar:[
+                    new Ext.Button({
+                        text:'add new user'
+                        ,iconCls:'icon-user_add'
+                        ,scope:this
+                        ,handler:function() {
+                            
+                            UserEditor(arguments[0].findParentByType('AutoGrid'), '');
+                        }
+                    })
+                ]
+                ,forceFit:false
+                ,stripRows:true
+                ,showBbar:true
+                ,loadMask:true
+                ,sm:new Ext.grid.RowSelectionModel({})
+                ,store:new Ext.data.JsonStore({
+                    autoLoad:true
+                    ,baseParams:{}
+                    ,remoteSort:true
+                    ,sortInfo: {
+                                field: 'id',
+                                direction: 'DESC'
+                            }
+                    ,proxy:new Ext.data.HttpProxy({
+                        url:'apps/main/users_grid/' + version
+                        ,method:'POST'
+                    })
+                    ,reader: new Ext.data.JsonReader({
+                        root:'rows'
+                        ,id:'id'
+                    })
+
+                })
+            });
+            
+            return users_grid;
+        
+        }
+
+function UserEditor(sender, pk) {
+          var editor = new Ext.ux.DjangoForm({
+                border:false
+                ,intro:'this is a generated form'
+                ,showButtons:true
+                ,showSuccessMessage:false
+                ,url:'apps/main/user_edit' 
+                ,baseParamsLoad:{pk:pk}
+                ,width:400
+                ,scope:this
+                 ,callback:function(form) {
+                    //console.log(form, this, editor);
+                    form.doLayout();
+                    form.findParentByType('window').center();
+                 }
+           });
+
+           var winEditor = new Ext.Window({
+            items:editor
+            ,title:'generated form example'
+           })
+           
+             editor.on('submitSuccess', function() {
+                //console.log('success', this, arguments);
+                        if (sender) sender.store.reload();
+                        if (winEditor && winEditor.isVisible()) {
+                            winEditor.close();
+                            winEditor.destroy();
+                        }
+
+                    }, sender || this);
+           
+           winEditor.show();
+        }
+        
+
+ 
+// ------------------------------------------
+
+
+function newDjangoGrid(title, djangoEntityName) {
+   var customgrid = GridConfigFactory(djangoEntityName);
+   
+   // Crea una ventana  
+   var newWin2 = new Ext.Window({
+        title: title
+        ,width:600
+        ,layout:'fit'
+        ,height:300
+        ,items: customgrid
+        ,draggable :true
+        }).show();
+}
+
+               
+</script>
+
+
+<!-- Container -->
+<div id="container">
+
+    {% if not is_popup %}
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+        {% block branding %}{% endblock %}
+        </div>
+        {% if user.is_active and user.is_staff %}
+        <div id="user-tools">
+            {% trans 'Welcome,' %}
+            <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
+            {% block userlinks %}
+                {% url 'django-admindocs-docroot' as docsroot %}
+                {% if docsroot %}
+                    <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+                {% endif %}
+                {% url 'admin:password_change' as password_change_url %}
+                {% if password_change_url %}
+                    <a href="{{ password_change_url }}">
+                {% else %}
+                    <a href="{{ root_path }}password_change/">
+                {% endif %}
+                {% trans 'Change password' %}</a> /
+                {% url 'admin:logout' as logout_url %}
+                {% if logout_url %}
+                    <a href="{{ logout_url }}">
+                {% else %}
+                    <a href="{{ root_path }}logout/">
+                {% endif %}
+                {% trans 'Log out' %}</a>
+            {% endblock %}
+        </div>
+        {% endif %}
+        {% block nav-global %}{% endblock %}
+    </div>
+    <!-- END Header -->
+    {% block breadcrumbs %}<div class="breadcrumbs"><a href="/">{% trans 'Home' %}</a>{% if title %} &rsaquo; {{ title }}{% endif %}</div>{% endblock %}
+    {% endif %}
+
+        {% if messages %}
+        <ul class="messagelist">{% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+	{% endfor %}</ul>
+        {% endif %}
+
+    <!-- Content -->
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+        {% block pretitle %}{% endblock %}
+        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+        {% block content %}
+        {% block object-tools %}{% endblock %}
+        {{ content }}
+        {% endblock %}
+        {% block sidebar %}{% endblock %}
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+
+    {% block footer %}<div id="footer"></div>{% endblock %}
+</div>
+<!-- END Container -->
+
+</body>
+</html>
