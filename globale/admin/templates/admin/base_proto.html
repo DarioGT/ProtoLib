@@ -282,6 +282,7 @@ function GridConfigFactory(protoEntityName) {
                 autoWidth:true
                 ,border:false
                 ,pagesize:5
+                
                 ,tbar:[
                     new Ext.Button({
                         text:'add new user'
@@ -331,6 +332,7 @@ function UserEditor(sender, pk) {
                 ,url:'protoExtjsFormDefinition' 
                 ,baseParamsLoad:{pk:pk}
                 ,width:400
+                ,height:200
                 ,scope:this
                  ,callback:function(form) {
                     //console.log(form, this, editor);
@@ -361,7 +363,6 @@ function UserEditor(sender, pk) {
  
 // ------------------------------------------
 
-
 function newDjangoGrid(protoEntityName) {
    var customgrid = GridConfigFactory(protoEntityName);
    
@@ -369,12 +370,47 @@ function newDjangoGrid(protoEntityName) {
    var newWin2 = new Ext.Window({
         title: protoEntityName
         ,width:600
-        ,layout:'fit'
-        ,height:300
-        ,items: customgrid
+        ,height:400
         ,draggable :true
-        }).show();
+        ,layout:'border'
+        ,defaults: {
+            collapsible: true,
+            split: true
+        },
+        items: [{
+	            title: 'Main Content',
+	            collapsible: false,
+            	region:'center',
+        		layout:'fit',
+            	items: customgrid
+        	},{
+	            title: 'Navigation',
+	            region:'west',
+	            width: 175,
+	            minSize: 100
+        	},{
+            	title: 'Footer',
+                region: 'south',
+                height: 150,
+                minSize: 75,
+                maxSize: 250,
+	      
+		      defaults:{border:false, activeTab:0}
+		      ,items:[{
+		           defaults:{layout:'fit'}
+		          ,xtype:'tabpanel'
+		          ,items:[{
+		              title:'Tab 1'
+		          },{
+		              title:'Tab 2'
+		          },{
+		              title:'Tab 3'
+		          }]
+		      }]
+	  }]
+	}).show();
 }
+
 
                
 </script>

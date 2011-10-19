@@ -1,3 +1,25 @@
+Tareas pendientes 
+
+	Crear el esquema de navegacion con el panel de navegacion y 
+	vinculos para crear los tabs 
+
+	Agregar vinculos de navegacion a la grilla
+
+	Pasar la vista a ProtoLib
+	 
+	Q la vista genere los datos de manejo tomados de la definicion Db
+	
+	Manejar los modelos tambien dinamicamente Db
+	 
+	Agregar vinculos de navegacion a la grilla
+	 
+	Manejo de navegacion con dependencia padre hijo 
+	
+	Independizar las DB 	
+
+	Convertir la grilla de lectura basica en una grilla extjs 	
+
+-----------------------------------------------------------------------
 Soporte ExtJs
 
         PAra el manejo de extjs pienso q la manera mas optima es utilizando el  Django-ExtDirect 
