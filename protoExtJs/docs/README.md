@@ -22,7 +22,7 @@ There is a full working demo project based on my django-skeleton here : [ExtJs d
         return utils.JsonResponse(json)
 
     # the javascript (ExtJs 3) :
-    var users_grid = new Ext.ux.AutoGrid({
+    var users_grid = new ProtoAutoGrid({
         autoWidth:true
         ,showBbar:true
         ,loadMask:true

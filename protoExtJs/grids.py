@@ -191,7 +191,7 @@ class ModelGrid(object):
         """ return the given queryset as an ExtJs grid config
             includes full metadata (columns, renderers, totalcount...)
             includes the rows data
-            to be used in combination with Ext.ux.AutoGrid 
+            to be used in combination with ProtoAutoGrid 
         """
         if not totalcount: 
             totalcount = queryset.count()

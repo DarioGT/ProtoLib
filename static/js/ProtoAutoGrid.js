@@ -1,5 +1,5 @@
     
-Ext.ux.AutoGrid = Ext.extend(Ext.ux.AutoGridPanel, {
+ProtoAutoGrid =  Ext.extend(ProtoAutoGridPanel, {
      showBbar:false
     ,stripeRows:true
     ,deferredRender :true
@@ -29,7 +29,7 @@ Ext.ux.AutoGrid = Ext.extend(Ext.ux.AutoGridPanel, {
             ,autoSave: this.autoSave
         };
         Ext.apply(this.initialConfig, config);
-        Ext.ux.AutoGrid.superclass.initComponent.apply(this, arguments);
+        ProtoAutoGrid.superclass.initComponent.apply(this, arguments);
 
     } 
 
@@ -38,4 +38,4 @@ Ext.ux.AutoGrid = Ext.extend(Ext.ux.AutoGridPanel, {
 
 
             
-Ext.reg('AutoGrid', Ext.ux.AutoGrid); 
+Ext.reg('AutoGrid', ProtoAutoGrid); 
