@@ -10,20 +10,14 @@
 {% block extrahead %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 
-        <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" /> 
-        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/adapter/ext/ext-base.js"></script> 
-        {% if debug %}
-            <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all-debug.js"></script> 
-            <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/examples/ux/ux-all-debug.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}resources/css/ext-all.css" /> 
 
-        {% else %}
-            <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/ext-all.js"></script> 
-			<script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/examples/ux/ux-all.js"></script>
-        {% endif %}
+        <script type="text/javascript" src="http:{{ STATIC_URL }}ext-all-debug.js"></script> 
+        <script type="text/javascript" src="http:{{ STATIC_URL }}locale/ext-lang-fr.js"></script> 
+
+		<script type="text/javascript" src="{{ STATIC_URL }}compatibility/ext3-core-compat.js"></script>
+		<script type="text/javascript" src="{{ STATIC_URL }}compatibility/ext3-compat.js"></script>
         
-        <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.4.0/src/locale/ext-lang-fr.js"></script> 
-
-
 </head>
 {% load i18n %}
 
