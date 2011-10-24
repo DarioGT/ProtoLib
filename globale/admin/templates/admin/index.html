@@ -18,6 +18,7 @@ index
         <div class="module">
         <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
         <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
+        
         {% for model in app.models %}
             <tr>
             {% if model.perms.change %}
@@ -37,9 +38,10 @@ index
             {% else %}
                 <td WIDTH="10%">&nbsp;</td>
             {% endif %}
+            
 			<!-- DGT:  Agrega el boton para cargar el JS -->
             <td WIDTH="5%">
-            	<input type="button" value="*" onclick="newDjangoGrid('{{ model.name }}')" />
+            	<input type="button" value="*" onclick="newDjangoGrid('{{ model.code }}')" />
             </td>
 
             </tr>

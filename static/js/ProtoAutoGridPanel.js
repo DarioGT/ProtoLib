@@ -1,4 +1,5 @@
 ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
+
 	deferredRender : true,
 	initComponent : function() {
 
@@ -6,11 +7,14 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.colModel = new Ext.grid.ColumnModel(this.columns);
 			delete this.columns;
 		}
+		
 		// Create a empty colModel if none given
 		if (!this.colModel) {
 			this.colModel = new Ext.grid.ColumnModel([]);
 		}
+		
 		ProtoAutoGridPanel.superclass.initComponent.call(this);
+		
 		// register to the store's metachange event
 		if (this.store) {
 			//console.log('this.store', this.store);
@@ -21,6 +25,7 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 			//    this.store.on("load", function() {alert('load');}, this);
 			//console.log('init this.store', this.store.sortInfo);
 		}
+		
 		// Store the column model to the server on change
 		if (this.autoSave) {
 			this.colModel.on("widthchange", this.saveColumModel, this);

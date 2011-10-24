@@ -6,11 +6,13 @@ ProtoAutoGrid =  Ext.extend(ProtoAutoGridPanel, {
     ,autoSave:false
     ,remoteSort:true
     ,sortInfo:{}
+
     // ,sm:new Ext.grid.RowSelectionModel({})
     // ,reader: new Ext.data.JsonReader({
             // root:'rows'
             // ,id:'id'
      // })
+
     ,initComponent:function() {
         this.pagesize = this.pagesize || 10;
         
@@ -22,6 +24,8 @@ ProtoAutoGrid =  Ext.extend(ProtoAutoGridPanel, {
                 emptyMsg: "Aucun élément à afficher"
         });
         
+        
+        // DGT  Variable de config 
         var config = {  
             store:  this.store
             ,stripeRows: true

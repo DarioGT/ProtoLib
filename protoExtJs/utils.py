@@ -181,3 +181,10 @@ def JsonCleanstr(inval):
     inval = inval.replace('"',r'\"')
     inval = inval.replace('\n','\\n').replace('\r','')
     return inval
+
+
+
+class VirtualField(object):
+    def __init__(self, name):
+        self.name = name
+

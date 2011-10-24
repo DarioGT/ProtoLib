@@ -1,42 +1,17 @@
- 
+
 import utils
-import forms
 
-# width, dateFormat, renderer, hidden, align, type
+# Si el campo no esta en la lista de campos a presentar se crea de manera virtual 
+from utils import VirtualField
+from models import Concept, Property, Relationship 
 
+class ProtoGridFactory(object):
 
-class SimpleGrid(object):
-    
-    def to_grid(self, fields, rows, totalcount = None, json_add = {}, sort_field = 'id', sort_direction = 'DESC'):
-        if not totalcount: 
-            totalcount = len(rows)
-        jdict = {
-            'success':True
-           ,'metaData':{
-                'root':'rows'
-                ,'totalProperty':'totalCount'
-                ,'successProperty':'success'
-                ,'sortInfo':{
-                   'field': sort_field
-                   ,'direction': sort_direction
-                }
-                ,'fields':fields
-                }
-                ,'rows':rows
-                ,'totalCount':totalcount
-            }
-        return utils.JSONserialise(jdict)
-         
-
-class VirtualField(object):
-    def __init__(self, name):
-        self.name = name
-
-
+    def __init__(self, modelName):
         
-class ModelGrid(object):
-
-    def __init__(self, model):
+        
+        self.model = Concept.objects.get( code__iexact  =  modelName )
+                
         self.model = model      # the model to use as reference
         self.fields = []        # holds the extjs fields
         self.base_fields = []   # holds the base model fields
@@ -228,61 +203,3 @@ class ModelGrid(object):
         exclude = []
         order = []
         fields_conf = {}
-
-class EditableModelGrid(ModelGrid):
-    def __init__(self, *args, **kwargs):
-        super(EditableModelGrid, self).__init__(*args, **kwargs)
-        # add editors
-        for field in self.base_fields:
-            field_conf = self.get_field(field.name)
-            f = self.get_base_field(field.name)
-           # print dir(f)
-            #print 'base_field', f, f.widget
-            if field_conf and not (getattr(self.Meta, 'fields_conf', {}).has_key(field.name) and self.Meta.fields_conf[field.name].has_key('editor')):
-                field_conf['editor'] = forms.getFieldConfig(field.name, field)
-                #print 'getFieldConfig editor', field.name, field_conf['editor']
-                
-    def update_instances_from_json(self, json, insert_new = True):
-        """ udpate this grid model instances from provided json
-            json example : update=[{"id":1, "username":"root2","first_name":"", "last_name":"bouqui", "is_staff":false, "is_superuser":true}]
-            only modified data is sent from client
-        """
-        from django.utils import simplejson
-        items = simplejson.loads(json)
-        
-        forms_items = []
-        forms_valid = True
-        errors = []
-        for item_data in items:
-            # get instance for this line
-            # todo : dynamic pk
-            pk = item_data.get('id', None)
-            form_data = item_data.copy()
-            del form_data['id']
-            instance = self.model()
-           # print pk, form_data
-            if pk:
-                # get the related instance
-                instance = self.model.objects.get(pk = pk)
-            else:
-                if not insert_new:
-                    # skip if new and dont insert
-                    continue
-            # get a ModelForm based on supplied fields
-            # todo : force mandatory fields !
-
-            form = forms.getExtJsModelForm(self.model, fields_list = form_data.keys())
-            form = form(form_data, instance = instance)
-            forms_items.append(form)
-            if not form.is_valid():
-                print 'invalid form', form.errors
-                errors.append(form.errors)
-
-        if not errors:
-            for form in forms_items:             
-                form.save()
-            return True
-        else:
-            # todo : detailed errors
-            raise Exception(errors)
-                

@@ -423,7 +423,10 @@ class AdminSite(object):
                         'name': capfirst(model_admin.verbose_name_plural),
                         'admin_url': mark_safe('%s/%s/' % (app_label, optKey.lower())),
                         'perms': perms,
-                        'menuOrder': model_admin.menuOrder, 
+                        'menuOrder': model_admin.menuOrder,
+                        
+                        #DGT:  Envia el codigo del modelo al template 
+                        'code': model.__name__ ,
                     }
                     if app_name in app_dict:
                         app_dict[app_name]['models'].append(model_dict)
