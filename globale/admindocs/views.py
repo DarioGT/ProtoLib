@@ -11,6 +11,7 @@ from django.template import RequestContext
 from django.utils.importlib import import_module
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+
 from globale.admin.views.decorators import staff_member_required
 from globale.admindocs import utils
 

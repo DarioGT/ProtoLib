@@ -1,20 +1,17 @@
 
 import utils
+#from django.db import models
 
 # Si el campo no esta en la lista de campos a presentar se crea de manera virtual 
 from utils import VirtualField
-from models import Concept, Property, Relationship 
 
 class ProtoGridFactory(object):
 
-    def __init__(self, modelName):
-        
-        
-        self.model = Concept.objects.get( code__iexact  =  modelName )
-                
-        self.model = model      # the model to use as reference
-        self.fields = []        # holds the extjs fields
-        self.base_fields = []   # holds the base model fields
+    def __init__(self, model):
+            
+        self.model = model          # the model to use as reference
+        self.fields = []            # holds the extjs fields
+        self.base_fields = []       # holds the base model fields
         
         model_fields = self.model._meta._fields()
         excludes = getattr(self.Meta, 'exclude', [])
