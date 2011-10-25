@@ -27,6 +27,7 @@ function newDjangoGrid(protoEntityName) {
 	            title: 'Navigation',
 	            region:'west',
 	            width: 175,
+	            collapsed: true, 
 	            minSize: 100
         	},{
             	title: 'Footer',
@@ -34,6 +35,7 @@ function newDjangoGrid(protoEntityName) {
                 height: 150,
                 minSize: 75,
                 maxSize: 250,
+                collapsed: true, 
 	      
 		      defaults:{border:false, activeTab:0}
 		      ,items:[{
@@ -48,7 +50,11 @@ function newDjangoGrid(protoEntityName) {
 		          }]
 		      }]
 	  }]
-	}).show();
+	});
+   
+   
+   
+   newWin2.show();
 }
 
 

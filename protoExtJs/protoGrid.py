@@ -1,6 +1,6 @@
 
 import utils
-#from django.db import models
+from django.db import models
 
 # Si el campo no esta en la lista de campos a presentar se crea de manera virtual 
 from utils import VirtualField
@@ -14,7 +14,9 @@ class ProtoGridFactory(object):
         self.base_fields = []       # holds the base model fields
         
         model_fields = self.model._meta._fields()
-        excludes = getattr(self.Meta, 'exclude', [])
+        excludes = getattr(self.Meta, 'exclude', ['id'])
+
+        
         # reorder cols if needed
         order = getattr(self.Meta, 'order', None)
         if order and len(order) > 0:
@@ -36,6 +38,7 @@ class ProtoGridFactory(object):
             if field.__class__.__name__ == VirtualField:
                 self.fields.append(self.Meta.fields_conf[field.name])
                 continue
+            
             fdict = {'name':field.name, 'header': field.name}
             
             if getattr(field, 'verbose_name', None) and field.verbose_name != field.name:
@@ -43,6 +46,7 @@ class ProtoGridFactory(object):
             
             if field.name == 'id':
                 fdict['id']='id'
+                
             if  field.__class__.__name__ == 'DateTimeField':
                 fdict['type'] = 'datetime'
                 fdict['xtype'] = 'datecolumn' 
@@ -57,6 +61,8 @@ class ProtoGridFactory(object):
                 fdict['format'] = 'Y-m-d'
                 #fdict['renderer'] = 'Ext.util.'
                 #fdict['editor'] = "new Ext.form.DateField({format:'Y-m-d'})"
+                
+                
             elif field.__class__.__name__ == 'IntegerField':
                 fdict['xtype'] = 'numbercolumn'
                 #fdict['editor'] = 'new Ext.form.NumberField()'
@@ -188,6 +194,14 @@ class ProtoGridFactory(object):
                 ,'fields':base_fields
             }
             ,'rows':self.get_rows(base_fields, queryset, start, limit)
+            ,'tabs':[
+                 {'T1': ['Col1','Col2']}, 
+                 {'T2': ['Col3','Col2']},
+                 ]    
+#            ,'details': {
+#                 'Concpet1': {'Id = %Id'}, 
+#                 'Concept2':{'Id = %Id'}
+#                 } 
             ,'totalCount':totalcount
         }
         
