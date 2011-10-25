@@ -35,6 +35,9 @@ ProtoAutoGrid =  Ext.extend(ProtoAutoGridPanel, {
         Ext.apply(this.initialConfig, config);
         ProtoAutoGrid.superclass.initComponent.apply(this, arguments);
 
+        // DGT  Variable de config 
+		console.log('this.store AutoGrid', this.store);
+
     } 
 
  

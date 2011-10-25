@@ -53,8 +53,11 @@ function newDjangoGrid(protoEntityName) {
 	});
    
    
-   
    newWin2.show();
+
+//   console.log( customgrid.store.reader.jsonData.metaData.fields ) ;
+   console.log( 'metaProto', customgrid.metaProto ) ;
+
 }
 
 

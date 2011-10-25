@@ -192,16 +192,17 @@ class ProtoGridFactory(object):
                    ,"direction": sort_direction
                 }
                 ,'fields':base_fields
+
+                ,'protoTabs':[
+                     {'T1': ['Col1','Col2']}, 
+                     {'T2': ['Col3','Col2']},
+                     ]    
+                ,'protoDetails': {
+                     'Concpet1': 'Id = %Id', 
+                     'Concept2': 'Id = %Id'
+                 } 
             }
             ,'rows':self.get_rows(base_fields, queryset, start, limit)
-            ,'tabs':[
-                 {'T1': ['Col1','Col2']}, 
-                 {'T2': ['Col3','Col2']},
-                 ]    
-#            ,'details': {
-#                 'Concpet1': {'Id = %Id'}, 
-#                 'Concept2':{'Id = %Id'}
-#                 } 
             ,'totalCount':totalcount
         }
         
@@ -214,3 +215,39 @@ class ProtoGridFactory(object):
         exclude = []
         order = []
         fields_conf = {}
+
+
+#Json MSG 
+#
+#{
+#    'succes': True,
+#    'tabs': [{
+#        'T1': ['Col1', 'Col2']
+#    }, {
+#        'T2': ['Col3', 'Col2']
+#    }],
+#    'totalCount': 58,
+#    'rows': [{
+#        'category': '', 'metaobj_ptr': u 'Model', 'id': u '217'
+#    }],
+#    'metaData': {
+#        'sortInfo': {
+#            'field': 'id',
+#            'direction': 'ASC'
+#        },
+#        'fields': [{
+#            'header': 'id',
+#            'name': 'id',
+#            'tooltip': u 'ID',
+#            'id': 'id'
+#        }, {
+#            'header': 'superConcept',
+#            'name': 'superConcept',
+#            'tooltip': u 'Super table'
+#        }],
+#        'successProperty': 'success',
+#        'totalProperty': 'totalCount',
+#        'idProperty': 'id',
+#        'root': 'rows'
+#    }
+#}

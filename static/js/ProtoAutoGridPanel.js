@@ -1,5 +1,7 @@
 ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 
+	metaProto: {},
+	
 	deferredRender : true,
 	initComponent : function() {
 
@@ -17,7 +19,10 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 		
 		// register to the store's metachange event
 		if (this.store) {
-			//console.log('this.store', this.store);
+			
+			// DGT: Ver el store 
+//			console.log('this.store', this.store);
+			
 			// this.store.on("load", this.onStoreLoad, this);
 			this.store.on("metachange", this.onMetaChange, this);
 			//     this.store.on("beforeload", function() {alert('beforeload')}, this);
@@ -56,9 +61,14 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 	// console.log('autogrid onRender');
 	// },
 	onMetaChange : function(store, meta) {
-		//console.log("onMetaChange", meta.fields);
+		
+		// DGT: Meta Change 
+		console.log("onMetaChange Tabs, Detailles", meta.protoDetails );
+		this.metaProto = meta.protoDetails; 
+		
 		// loop for every field, only add fields with a header property (modified copy from ColumnModel constructor)
 		//alert('store onmetachange');
+		
 		var c;
 		var config = [];
 		var lookup = {};

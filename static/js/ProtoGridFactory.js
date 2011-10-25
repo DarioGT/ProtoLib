@@ -24,10 +24,10 @@ function GridConfigFactory(protoEntityName) {
 //              En 3.x no es el valor por defecto
                 ,sm:new Ext.grid.RowSelectionModel({})
             
-                ,store:new Ext.data.JsonStore({
+                ,store: new Ext.data.JsonStore({
                     autoLoad:true
                     ,baseParams:{}
-                    ,remoteSort:false
+                    ,remoteSort:true 
                     ,sortInfo: {
                                 field: 'id',
                                 direction: 'DESC'
