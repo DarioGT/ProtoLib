@@ -1,5 +1,8 @@
+    
+
 ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 
+//	No se requiere, pues pasare el dato en el evento metaChange del store 	
 	metaProto: {},
 	
 	deferredRender : true,
@@ -24,6 +27,7 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 //			console.log('this.store', this.store);
 			
 			// this.store.on("load", this.onStoreLoad, this);
+			// DGT: GEnera el evento MetaChange 
 			this.store.on("metachange", this.onMetaChange, this);
 			//     this.store.on("beforeload", function() {alert('beforeload')}, this);
 			//     this.store.on("loadexception ", function() {alert('loadexception ')}, this);
@@ -40,12 +44,13 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.on("columnresize", this.saveColumModel, this);
 		}
 
-		//  this.on("columnresize", this.saveColumModel, this);
 
 		this.on("show", this.onShow, this);
 		//    this.on("render", this.onRender, this);
 
 	},
+	
+	
 	// onBeforeLoad: function(store, meta) {
 	// this.el.mask("Chargement...");
 	// },
@@ -60,6 +65,8 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 	// onRender:function() {
 	// console.log('autogrid onRender');
 	// },
+	
+	// Es un evento del store,  internmanete se encarga de extraer la meta del json request 
 	onMetaChange : function(store, meta) {
 		
 		// DGT: Meta Change 
@@ -200,3 +207,52 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 		});
 	}
 });
+
+// 
+
+ProtoAutoGrid =  Ext.extend(ProtoAutoGridPanel, {
+     showBbar:false
+    ,stripeRows:true
+    ,deferredRender :true
+    ,autoSave:false
+    ,remoteSort:true
+    ,sortInfo:{}
+
+    // ,sm:new Ext.grid.RowSelectionModel({})
+    // ,reader: new Ext.data.JsonReader({
+            // root:'rows'
+            // ,id:'id'
+     // })
+
+    ,initComponent:function() {
+        this.pagesize = this.pagesize || 10;
+        
+        if (this.showBbar) this.bbar = new Ext.PagingToolbar({
+                pageSize: this.pagesize,
+                store:  this.store,
+                displayInfo: true,
+                displayMsg: '{0} à {1} sur {2}',
+                emptyMsg: "Aucun élément à afficher"
+        });
+        
+        
+        // DGT  Variable de config 
+        var config = {  
+            store:  this.store
+            ,stripeRows: true
+            ,loadMask: true
+            ,autoSave: this.autoSave
+        };
+        Ext.apply(this.initialConfig, config);
+        ProtoAutoGrid.superclass.initComponent.apply(this, arguments);
+
+        // DGT  Variable de config 
+//		console.log('this.store AutoGrid', this.store);
+
+    } 
+
+ 
+}); 
+
+Ext.reg('AutoGrid', ProtoAutoGrid); 
+

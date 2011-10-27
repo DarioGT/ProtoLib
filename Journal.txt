@@ -1,0 +1,55 @@
+
+11/10/25  Enviar la configuracion de detalles y tabls
+
+		En la construccion del json estoy enviando una configuracion basica de tabs y de los detalles  (protogrid.py)
+
+            ,'protoTabs':[
+                 {'T1': ['Col1','Col2']},
+                 {'T2': ['Col3','Col2']},
+                 ]
+            ,'protoDetails': {
+                 'Concpet1': 'Id = %Id',
+                 'Concept2': 'Id = %Id'
+                 }
+
+Ok		pero no encuentro la conf  q envio en el store
+		La llamada Ajax hace desde ProtoGrid  ( POST )
+
+Ok		1. Verificar q este llegando,  ( manejar el store )
+
+		Ext.data.HttpProxy( url, method )
+        La lectura se hace asi
+
+              ,proxy:new Ext.data.HttpProxy({
+                    url:'protoExtjsGridDefinition/?' + protoEntityName
+                    ,method:'POST'
+                })
+
+                ,reader: new Ext.data.JsonReader({
+                    root:'rows'
+                    ,id:'id'
+                })
+
+
+        La conf de columnas puede manejarse simplemente asignando la variable columns 
+        
+        // Column Model shortcut array
+        var cols = [
+          { id : 'name', header: "Record Name", width: 160, sortable: true, dataIndex: 'name'},
+          {header: "column1", width: 50, sortable: true, dataIndex: 'column1'},
+          {header: "column2", width: 50, sortable: true, dataIndex: 'column2'}
+        ];
+
+        Q es lo q viene en mi store.metaData.fields
+        
+        Estaba en el primer nivel con los campos de control,  lo inclui en la meta y ya puedo verlo desde js.
+
+        Ahora es como pasarla para verla como una propiedad de la grilla?  asi podre desde el panel exterior configuar el entorno (navegacion)
+        Hacer un getMeta en la grilla??
+        
+11/10/26        
+        No se independizo el store y se lee el evento del metachange, 
+        Peparacion del ejemplo en ext3.4/ejemplos/prueba/protoPanel
+        
+
+----------------------------------------------------------------------------------

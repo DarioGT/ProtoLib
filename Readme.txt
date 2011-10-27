@@ -1,87 +1,40 @@
 Tareas pendientes
 
-
-	Crear el esquema de navegacion con el panel de navegacion y
-	vinculos para crear los tabs
-
-11/10/25  Enviar la configuracion de detalles y tabls
-
-		En la construccion del json estoy enviando una configuracion basica de tabs y de los detalles  (protogrid.py)
-
-            ,'protoTabs':[
-                 {'T1': ['Col1','Col2']},
-                 {'T2': ['Col3','Col2']},
-                 ]
-            ,'protoDetails': {
-                 'Concpet1': 'Id = %Id',
-                 'Concept2': 'Id = %Id'
-                 }
-
-		pero no encuentro la conf  q envio en el store
-		La llamada Ajax hace desde ProtoGrid  ( POST )
-
-		1. Verificar q este llegando,  ( manejar el store )
-
-		Ext.data.HttpProxy( url, method )
-
-        La lectura se hace asi
-
-              ,proxy:new Ext.data.HttpProxy({
-                    url:'protoExtjsGridDefinition/?' + protoEntityName
-                    ,method:'POST'
-                })
-
-                ,reader: new Ext.data.JsonReader({
-                    root:'rows'
-                    ,id:'id'
-                })
-
-
-        La conf de columnas puede manejarse simplemente asignando la variable columns 
-        
-        // Column Model shortcut array
-        var cols = [
-          { id : 'name', header: "Record Name", width: 160, sortable: true, dataIndex: 'name'},
-          {header: "column1", width: 50, sortable: true, dataIndex: 'column1'},
-          {header: "column2", width: 50, sortable: true, dataIndex: 'column2'}
-        ];
-
-        Q es lo q viene en mi store.metaData.fields
-        
-        Estaba en el primer nivel con los campos de control,  lo inclui en la meta y ya puedo verlo desde js.
-
-        Ahora es como pasarla para verla como una propiedad de la grilla?  asi podre desde el panel exterior configuar el entorno (navegacion)
-        Hacer un getMeta en la grilla??
-
----------------
-
-
-	Agregar vinculos de navegacion a la grilla
-
-	Pasar la vista a ProtoLib
-	 
-	Q la vista genere los datos de manejo tomados de la definicion Db
+	** Seleccion de Columnas visibles ( vista )
+	PAra el manejode las columnas no se usaran tabs, pues este objeto es automaticamente un contenedor y el objeto contenido 
+	hace referencia a su contenedor, de tal forma q al intentar compartirlo en diferentes tabs, solo aparece en el ultimo q 
+	se asigno,  habria q jugar con esto dinamicamente y tocaria escribir mas codigo.  
 	
-	Manejar los modelos tambien dinamicamente Db
+	
+	** Busqueda  QBE
+	Ext.ux.form.SearchField  Es un widget especializado en esto,  y con un campo de base adicional se podria manejar 
+	busquedas sobre campos especificos o sobre todos los campos buscables
 	 
+	http://joekuan.wordpress.com/2011/04/04/selective-column-search-using-extjs-combo-and-searchfield-together/
+	file:///D:/data/ExtJs/ext-3.4.0/examples/form/custom-access.html
+	file:///D:/data/ExtJs/ext-3.4.0/examples/forum/forum.html
+
+	** Filtros 
+	Los filtros sobre las columnas tambien son una buena opcion 
+	file:///D:/data/ExtJs/ext-3.4.0/examples/grid-filtering/grid-filter-local.html
+
+
+** 	Nagegador 
 	Agregar vinculos de navegacion a la grilla
-	 
 	Manejo de navegacion con dependencia padre hijo 
-	
+
+**	Otras 
+	Pasar la vista a ProtoLib
+	Q la vista genere los datos de manejo tomados de la definicion Db
+	Manejar los modelos tambien dinamicamente Db
 	Independizar las DB 	
-
-	Convertir la grilla de lectura basica en una grilla extjs 	
-
-	Cambiar el InLine por una tabla simple con 
-	una columa de modificacion y otra de seleccion (hipervinculo sobre la llave), 
-
-	
+	Convertir la grilla de lectura basica en una grilla extjs
+	 	
+	 	
+Ok 	Cambiar el InLine por una tabla simple con una columa de modificacion y otra de seleccion (hipervinculo sobre la llave), 
 	la edicion no se hara inline, se hara todo el tiempo em la forma base del modelo,
 
-	Panel de vinculos con manejo de la fila seleccionada. 
 
-	
-	Generacion de modelos a partir de la Db  
 
 
 ------------------------------------------------------------------------
