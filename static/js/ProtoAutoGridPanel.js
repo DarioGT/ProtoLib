@@ -70,7 +70,7 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 	onMetaChange : function(store, meta) {
 		
 		// DGT: Meta Change 
-		console.log("onMetaChange Tabs, Detailles", meta.protoDetails );
+		// console.log("onMetaChange Tabs, Detailles", meta.protoDetails );
 		this.metaProto = meta.protoDetails; 
 		
 		// loop for every field, only add fields with a header property (modified copy from ColumnModel constructor)
