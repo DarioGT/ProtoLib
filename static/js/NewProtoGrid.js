@@ -13,7 +13,7 @@ function newDjangoGrid(protoEntityName) {
         // autoScroll:true,
 	    });
 	 
- 	function addTab(tabTitle ){
+ 	function addTab( tabTitle  ){
         tab = protoTabs.add({
             title: tabTitle,
             // iconCls: 'tabs',
@@ -69,7 +69,7 @@ function newDjangoGrid(protoEntityName) {
  	   for (var vTab in pDetails) {
  	   		console.log( 'vTab', vTab ) ;
  			// console.log( pDetails[vTab] + " ");
-	 		// addTab( vtab );
+	 		addTab( vTab );
 		}
  
    });

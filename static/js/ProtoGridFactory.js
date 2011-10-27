@@ -7,9 +7,8 @@ function GridConfigFactory(protoEntityName) {
         sortInfo: {
             field: 'id',
             direction: 'DESC'
-        }
-
-        ,
+        },
+        
         proxy: new Ext.data.HttpProxy({
             url: 'protoExtjsGridDefinition/?' + protoEntityName,
             method: 'POST'
