@@ -65,6 +65,13 @@ function newDjangoGrid(protoEntityName) {
     tb.addField(searchCr);
     tb.doLayout();
 
+	// Panel de detalles ==================================================================================
+
+	var detailEI = Ext.id();
+    protoTabs = new Ext.TabPanel({
+    	id: detailEI 
+    });
+
 	//  Crea una ventana     ===================================================================================  
     var newWin2 = new Ext.Window({
         title: protoEntityName
@@ -86,7 +93,6 @@ function newDjangoGrid(protoEntityName) {
 
             	items: masterGrid
         	},{
-				id: 'regionDetail', 
             	title: 'Details',
                 region: 'south',
                 collapsed: true, 
@@ -96,11 +102,21 @@ function newDjangoGrid(protoEntityName) {
                 minSize: 75,
                 maxSize: 250,
 		      	defaults:{border:false, activeTab:0}, 
-		      	// items: detailGrid,
+		      	items: protoTabs, 
 	  }]
 	});
    
 	//  Logica de operacion  ===================================================================================  
+
+ 	function addTab( tabTitle, gridDetail  ){
+        tab = protoTabs.add({
+            title: tabTitle,
+			layout: 'fit',
+            items: gridDetail
+    	});
+    	// potoTabs.doLayout();
+    	protoTabs.setActiveTab(tab);
+	}
 
    // En este evento tengo la metadata 
    protoStore.on ( 'metachange' , function(store, meta) {
@@ -145,10 +161,15 @@ function newDjangoGrid(protoEntityName) {
         protoEntityName = item.text; 
         protoEntityName = "Domain"; 
         
-        region = Ext.getCmp( 'regionDetail' ); 
+        // region = Ext.getCmp( 'regionDetail' ); 
 		detailGrid =  GridConfigFactory(protoEntityName);
- 	   	console.log('region', region    ) ;
 
+		addTab( protoEntityName, detailGrid ); 
+
+		// detailGrid.render( detailEI )
+		// detailPanel.doLayout();
+		// detailPanel.show();
+		
     	// region.title = 'Cambio..';
       	// region.items = detailGrid;
 

@@ -1,3 +1,17 @@
+11/10/27  MAestro detalle 
+
+		MAnejar un panel de detalle resulto ser mas dificil q manejar los tabs al momento 
+		de hacer el render de la grilla,  
+		
+		Version de prueba de una grilla sobre el detalle, creacion de tabs dinamica 
+		** Corregir si el tab ya esta creado, solo se debe activar 
+		
+		** Manejo de la navegacion basada en el filtro , filtrar primero la grilla padre 
+		
+		** por q ahora el store no genera detalles adicioaneles en la creacion de cada grilla ??	
+	
+		
+
 11/10/27  Formato de la ventana 
 
 		Formato de la ventana,  
