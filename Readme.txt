@@ -23,6 +23,10 @@ Tareas pendientes
 	Agregar vinculos de navegacion a la grilla
 	Manejo de navegacion con dependencia padre hijo 
 
+	El manejo de tabs quedara para mas adelante, por ahora el manejo de master-detail se hace sobre un solo 
+	detalle,  en el menu se agregan todas los "detalles"  y se configura el detalle seleccionado. 
+	
+
 **	Otras 
 	Pasar la vista a ProtoLib
 	Q la vista genere los datos de manejo tomados de la definicion Db

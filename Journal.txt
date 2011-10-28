@@ -1,3 +1,24 @@
+11/10/27  Formato de la ventana 
+
+		Formato de la ventana,  
+		El manejo de detalles se pasa a un menu,  el QBE se manejara por campos en Tbar 
+		Las vistas ( tabas de cols ) se manejaran en un menu con cada una de las vistas seleccionadas 
+		
+		Intento por montar la grilla en forma dinamica,
+		  
+		no se puede reemplazar la variable de objeto pues la referencia siempre queda al objeto anterior 
+		habria q reconfiguar el store 
+		
+		De todas maneras hay q sacar el store, por q los eventos para configuar MD ( maestro detall ) son del 
+		store, 
+		
+		intente con Ext.getCMP y me trae la referencia, voy a seguir intentando como cambiar la ref del objeto obtenido 
+		dinamicamente 
+		
+		verificar si los id son unicos, por q si para cada ventana usa el mismo id, todas se encuentran en la misma pagina 
+		y generara un error. 
+		 
+		
 
 11/10/25  Enviar la configuracion de detalles y tabls
 
