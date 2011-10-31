@@ -1,0 +1,843 @@
+{% extends "famille/base.html" %}
+{% block headercustom %} 
+	
+	<script src="{{ cfg.base_url }}javascript/ext-4.0.2a/ext-all.js" type="text/javascript"></script>
+	<link type="text/css" href="{{ cfg.base_url }}javascript/ext-4.0.2a/resources/css/ext-all.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %} 
+<div id="main-extjs"></div>
+
+<script type="text/javascript">
+
+
+	try {
+		var layoutRender = new function() {
+			var containerPanel;
+			var formTop;
+			var tabs,tabFiche,gridEquivalence;
+			
+			this.loadLogicielData = function(idLogiciel) {
+				
+            	Ext.Ajax.request({
+            		//defaultHeaders:{'X-CSRFToken':getCookie('csrftoken')  },
+            		headers:{'X-CSRFToken':Ext.util.Cookies.get('csrftoken') },
+            	    url: 'loadLogicielData',
+            	    params: {
+            	    	'idLogiciel': idLogiciel
+            	    },
+            	    success: function(response){
+            	        var text = response.responseText;
+            	        var object = Ext.JSON.decode(text, true);
+            	        
+           	        	Ext.getCmp("cbo-famille").setValue(parseInt(object["Famille"]));
+           	        	Ext.getCmp("cbo-logiciel-type").setValue(parseInt(object["TypeLogiciel"]));
+           	        	Ext.getCmp("txt-in-DureeCycle").setValue(object["DureeCycle"]);
+           	        	Ext.getCmp("txt-in-idlogiciel").setValue(idLogiciel);
+           	        	
+           	        	Ext.Ajax.request({
+           	        		headers:{'X-CSRFToken':Ext.util.Cookies.get('csrftoken') },
+           	        		url:'setDataEquivalence',
+           	        		params:{
+           	        			'idLogiciel': idLogiciel
+           	        		},
+           	        		success:function(response){
+           	        			//alert(response.responseText);
+           	        			/*storeEquivalence.add({'logiciel_id':'2', 'equivalence':'logiciel2' });
+           	        			storeEquivalence.add({'logiciel_id':'4', 'equivalence':'logiciel4' });*/
+           	        			//storeEquivalence.save();
+           	        			//storeEquivalence.sync();
+           	        			
+           	        			storeEquivalence.add({'logiciel_id':'10', 'equivalence':'logiciel10' });
+          	        			storeEquivalence.sync();
+           	        			//storeEquivalence.load();
+           	        			//alert(storeEquivalence.getCount());
+           	        			//alert("synchronisation");
+           	        					}
+           	        	});
+    
+            	    }
+            	});
+			}
+			
+			
+			this.init_tabFiche = function() {
+				
+			    var cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
+			        clicksToEdit: 1
+			    });
+
+			    Ext.define('dataEquivalence', {
+			        extend: 'Ext.data.Model',
+			        fields: [
+			            // the 'name' below matches the tag name to read, except 'availDate'
+			            // which is mapped to the tag 'availability'
+			            {name: 'logiciel_id', type: 'string'},
+			            {name: 'logiciel_name', type: 'string'}
+			        ]
+			    });
+				
+			    // create the Data Store
+			    storeEquivalence = Ext.create('Ext.data.Store', {
+			        model: 'dataEquivalence',
+			        proxy: {
+			            type: 'ajax',
+			            // load remote data using HTTP
+			            url: 'data_equivalence',
+			            // specify a XmlReader (coincides with the XML format of the returned data)
+			    		
+			    		headers:{'X-CSRFToken':Ext.util.Cookies.get('csrftoken') },
+			            reader: {
+			                type: 'xml',
+			                // records will have a 'plant' tag
+			                record: 'equivalence'
+			            }
+			        },
+			        sorters: [{
+			            property: 'common',
+			            direction:'ASC'
+			        }]
+			    });
+				
+			    gridEquivalence = Ext.create('Ext.grid.Panel', {
+			        store: storeEquivalence,
+			        columns: [{
+			            id: 'logiciel_id',
+			            header: 'Id',
+			            dataIndex: 'logiciel_id',
+			            hidden:true
+			        }, {
+			            header: 'Équivalence',
+			            dataIndex: 'logiciel_name',
+			            width: 350,
+			            id: 'logciel_name'
+			            /*field: {
+			                xtype: 'combobox',
+			                typeAhead: true,
+			                triggerAction: 'all',
+			                selectOnTab: true,
+			                store: [
+			                    ['Window XP', 'Window XP'],
+			                    ['Linux', 'Linux'],
+			                    ['Mac', 'Mac']
+			                ],
+			                lazyRender: true,
+			                listClass: 'x-combo-list-small'
+			            }*/
+			        }],
+			        selModel: {
+			            selType: 'cellmodel'
+			        },
+			        width: 350,
+			        height: 400,
+			        title: 'Équivalences',
+			        frame: true,
+			        tbar: [{
+			            	text: 'Ajouter...',
+			            	handler : function() {  alert('k'); }
+			            },{
+			            	text: 'Supprimer...',
+			            	handler : function()  {  alert('k');  }  
+			           }
+			        ],
+			        plugins: [cellEditing]
+			    });
+			    
+			    /*var formAddEquivalence = Ext.create('Ext.window.Window', {
+			    	title: 'Ajouter une équivalence',
+			    	items:[{
+			    		xtype: 'combobox',
+	                    fieldLabel: 'Équivalence',
+	                    name: 'cbo-add-equivalence',
+	                    id: 'cbo-add-equivalence',
+	                    store: Ext.create('Ext.data.ArrayStore', {
+	                        fields: ['idLogiciel', 'nom'],
+	                        data : [{% for l in lst_logiciel_meme_famille %}[{{ l.idLogiciel }},'{{ l.Nom }}']{% if forloop.last %}{% else %},{% endif %}{% endfor %}]
+	                    }),
+	                    valueField: 'idlogiciel',
+	                    displayField: 'nom',
+	                    typeAhead: true,
+	                    queryMode: 'local',
+	                    emptyText: 'Choisissez une équivalence'
+			    	}
+			    	       ],
+			    	
+			    });*/
+			    var formDeleteEquivalence;
+				
+				var formFiche  = Ext.create('Ext.form.Panel', {
+			        url:'save-form.php',
+			        colspan:1,
+			        frame:true,
+			        title: 'Fiche',
+			        bodyStyle:'padding:5px 5px 0',
+			        width: 400,
+			        height:400,
+			        fieldDefaults: {
+			            msgTarget: 'side',
+			            labelWidth: 100
+			        },
+			        defaultType: 'textfield',
+			        defaults: {
+			            anchor: '100%'
+			        },
+
+			        items: [{
+			            fieldLabel: 'Durée du cycle',
+			            name: 'first',
+			            id:'txt-in-DureeCycle',
+			            allowBlank:false
+			        },{
+			            fieldLabel: 'Éditeur',
+			            name: 'last',
+			            id:'txt-in-Editeur'
+			        },{
+			            fieldLabel: 'Description',
+			            name: 'company',
+			            id:'txt-in-description'
+			        }, {
+			            fieldLabel: 'Commentaire',
+			            name: 'email',
+			            id:'txt-in-Commentaire'
+			        },{
+			        	fieldlabel: 'idlogiciel',
+			        	name : 'idLogiciel',
+			        	id : 'txt-in-idlogiciel',
+			        	hidden:true
+			        }],
+
+			        buttons: [{
+			            text: 'Enregistrer',
+			            handler:function() { 
+			            	var idLogiciel = Ext.getCmp("txt-in-idlogiciel").getValue();
+			            	var DureeCycle = Ext.getCmp("txt-in-DureeCycle").getValue();
+			            	var Editeur = Ext.getCmp("txt-in-Editeur").getValue();
+			            	var description = Ext.getCmp("txt-in-description").getValue(); 
+			            	var Commentaire = Ext.getCmp("txt-in-Commentaire").getValue(); 
+			            	Ext.Ajax.request({
+			            		headers:{'X-CSRFToken':Ext.util.Cookies.get('csrftoken') },
+			            		method:'POST',
+	           	        		url:'save_form_down',
+	           	        		params:{
+	           	        			'idLogiciel': idLogiciel,
+	           	        			'DureeCycle': DureeCycle,
+	           	        			'Editeur': Editeur,
+	           	        			'description': description,
+	           	        			'Commentaire': Commentaire
+	           	        		},
+	           	        		success:function(response){
+	           	        			alert(response.responseText);
+	           	        					}
+			            	});
+			            	alert('save...');  }
+			        }]
+			    });
+				
+				tabFiche = Ext.create('Ext.Panel', {
+					title:'',
+					width:800,
+					layout:'table',
+			        layout: {
+			            type: 'table',
+			            columns: 2
+			        },
+					items:[ formFiche, gridEquivalence ]
+				});
+			}
+			
+			this.init_layout = function() {
+				
+			    tabs = Ext.createWidget('tabpanel', {
+			        rowspan:1,
+			        width: 780,
+			        activeTab: 0,
+			        colspan:2,
+			        bodyStyle:'padding:5px 5px 20px 0;',
+			        defaults :{
+			            bodyPadding: 10,
+			            bodyMargin:10
+			        },
+			        items: [{
+			            items:[ tabFiche ],
+			            title: 'Fiche'
+			        },{
+			        	html:'Coûts annuels',
+			            title: 'Coûts annuels'
+			        },{
+			        	html:'Coûts adherance',
+			        	title:'Coûts ahdérance'
+			        },{
+			        	html:'Discussion logiciel',
+			        	title:'Discussion logiciel'
+			        }]
+			    });
+				
+				formTop = Ext.create('Ext.form.Panel', {
+			        url:'save-form.php',
+			        rowspan:1,
+			        colspan:2,
+			        frame:true,
+			        title: 'Informations sur le logiciel',
+			        bodyStyle:'padding:5px 5px 20px 0;',
+			        width: 780,
+			        layout:{type:'table',columns:3},
+			        fieldDefaults: {
+			            msgTarget: 'side',
+			            labelWidth: 75
+			        },
+			        defaultType: 'textfield',
+			        defaults: {
+			            anchor: '100%'
+			        },
+			        items: [        {
+	                    xtype: 'combobox',
+	                    fieldLabel: 'Nom',
+	                    name: 'cbo-logiciel',
+	                    id: 'cbo-logiciel',
+	                    store: Ext.create('Ext.data.ArrayStore', {
+	                        fields: ['Logiciel', 'nom'],
+	                        data : [{% for l in lst_logiciel %}[{{ l.idLogiciel }},'{{ l.Nom }}']{% if forloop.last %}{% else %},{% endif %}{% endfor %}]
+	                    }),
+	                    valueField: 'Logiciel',
+	                    displayField: 'nom',
+	                    typeAhead: true,
+	                    queryMode: 'local',
+	                    emptyText: 'Choisissez...'
+		        },{
+		                    xtype: 'combobox',
+		                    fieldLabel: 'Famille',
+		                    name: 'cbo-famille',
+		                    id: 'cbo-famille',
+		                    store: Ext.create('Ext.data.ArrayStore', {
+		                        fields: ['idFamille', 'nom'],
+		                        data : [{% for l in lst_famille %}[{{ l.idFamille }},'{{ l.Nom }}']{% if forloop.last %}{% else %},{% endif %}{% endfor %}]
+		                    }),
+		                    valueField: 'idFamille',
+		                    displayField: 'nom',
+		                    typeAhead: true,
+		                    queryMode: 'local',
+		                    emptyText: 'Choisissez une famille'
+			        },{
+	                    xtype: 'combobox',
+	                    fieldLabel: 'Type',
+	                    name: 'cbo-logiciel-type',
+	                    id: 'cbo-logiciel-type',
+	                    store: Ext.create('Ext.data.ArrayStore', {
+	                        fields: ['idTypeLogiciel', 'nom'],
+	                        data : [{% for l in lst_type %}[{{ l.idTypeLogiciel }},'{{ l.TypeLogiciel }}']{% if forloop.last %}{% else %},{% endif %}{% endfor %}]
+	                    }),
+	                    valueField: 'idTypeLogiciel',
+	                    displayField: 'nom',
+	                    typeAhead: true,
+	                    queryMode: 'local',
+	                    emptyText: 'Choisissez un type',
+	                    width:250
+		        },
+			        ],
+			        buttons: [{
+			            text: 'Enregistrer',
+			            handler:function() { 
+			            	var idLogiciel = Ext.getCmp('cbo-logiciel').getValue();
+			            	var idFamille = Ext.getCmp('cbo-famille').getValue();
+			            	var idLogicielType = Ext.getCmp('cbo-logiciel-type').getValue();
+			            	Ext.Ajax.request({
+			            		//defaultHeaders:{'X-CSRFToken':getCookie('csrftoken')  },
+			            		headers:{'X-CSRFToken':Ext.util.Cookies.get('csrftoken') },
+			            	    url: 'save_form_top',
+			            	    params: {
+			            	    	'idLogiciel': idLogiciel,
+			            	    	'idFamille':idFamille,
+			            	    	'idLogicielType':idLogicielType
+			            	    },
+			            	    success: function(response){
+			            	        var text = response.responseText;
+			            	        // process server response here
+			            	        //Ext.window.MessageBox.alert('Information', text).show();
+			            	        alert(text);
+			            	    }
+			            	});
+			            }
+			        }]
+			    });
+				
+				
+			}
+			
+			this.render = function() {
+				
+				this.init_tabFiche();
+				this.init_layout();
+				
+				containerPanel = Ext.create('Ext.Panel', {
+					title:'Fiche logiciel',
+					width:780,
+					layout:'table',
+					//height:'auto',
+			        layout: {
+			            type: 'table',
+			            columns: 2
+			        },
+					items:[
+							formTop, tabs
+					       ]
+				});
+				containerPanel.render('main-extjs');
+			}
+		}
+		
+		
+		
+		Ext.onReady(
+			function() {
+				layoutRender.render();
+				Ext.getCmp('cbo-logiciel').on('change',
+					function(cbo) {
+						layoutRender.loadLogicielData( cbo.getValue() );
+					}	
+				);
+				
+			}	
+		);
+		
+	} catch (e) {
+		alert(e.message);
+		
+	}
+</script>
+
+<!-- 
+
+<h1>Veuillez choisir un logiciel dans la liste afin de generer la fiche.</h1>
+
+{% if not lst_logiciel  %}
+<br />
+<strong style="font-size:12px;font-weight:bold;">
+Pas de logiciel a selectionner.<br />
+</strong>
+{% else %}
+<form name="form-select-logiciel" method="post" action="">
+	{% csrf_token %} 
+	<select name="select-logiciel">
+	{% for o in lst_logiciel %}
+	<option value=" {{ o.idLogiciel }} ">{{ o.Nom }}</option>
+	{% endfor %}
+	</select>
+	<input type="submit" name="choose-logiciel" value="Generer" />
+</form>
+
+<div style="border:1px solid grey;height:150px;width:600px;overflow:scroll;">
+	<table border ="1px"id="equivalence">
+		<caption>&Eacute;quivalences</caption>
+		<tr>
+			<th>Logiciel</th>
+			<th>Logiciel &eacute;quivalent</th>
+			
+		</tr>
+		{% for o in lst_equivalences %}
+		<tr>
+			<td>{{ o.Logiciel }}</td>
+			<td>{{  o.LogicielRef }}</td>
+		</tr>
+		{% endfor %}
+		<br />
+		<br />
+		<a href="javascript:void(0);" onclick="showFormAddEquivalence();">Ajouter une &eacute;quivalence</a>
+	</table>
+</div>
+
+	<div id="tabs" style="width:630px;">
+		<ul>
+			<li><a href="#tabs-1">Cout adhérance</a></li>
+			<li><a href="#tabs-2">Cout Annuel</a></li>
+			<li><a href="#tabs-3">Discussion logiciel</a></li>
+			<li><a href="#tabs-4">Sources</a></li>
+		</ul>
+		<div id="tabs-1">
+			<table border="1" cellspacing="3" cellpadding="3">
+				<caption>Coût adhérance</caption>
+				<tr>
+					<th>
+						Logiciel référence
+					</th>
+					<th>
+						Cout évolution
+					</th>
+					<th>
+						Cout substitution
+					</th>
+					<th>
+					</th>
+				</tr>
+				{% for o in lst_cout_adherance %}
+				<tr>
+					<td>
+						{{ o.LogicielRef.Nom }}
+					</td>
+					<td>
+						<input type="text" value="{{ o.CoutEvolution }}" name="txt_evolution_{{ o.idCoutAdherance }}" />
+					</td>
+					<td>
+						<input type="text" value="{{ o.CoutSubstitution }}" name="txt_evolution_{{ o.idCoutAdherance }}" />
+					</td>
+					<td>
+						<input type="checkbox" name="chk_delete_adherance_{{ o.idCoutAdherance }}" />
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+			<br />
+			<br />
+			<br />
+			<a href="javascript:void(0);" onclick="showForm('adherance');">Ajouter un cout adhérance</a>
+			
+		</div>
+		<div id="tabs-2">
+			<table border="1" cellspacing="3" cellpadding="3">
+				<caption>Co&ucirc;t annuel</caption>
+				<tr>
+					<th>
+						Ann&eacute;e
+					</th>
+					<th>
+						Co&ucirc;t acquisition
+					</th>
+					<th>
+						Co&ucirc;t maintenance
+					</th>
+					<th>
+					    Co&ucirc;t formation
+					</th>
+					<th>
+					    Co&ucirc;t support
+					</th>
+					<th>
+					    Logiciel
+					</th>
+				</tr>
+				{% for o in lst_cout_annuel %}
+				<tr>
+					<td>
+						{{ o.Annee }}
+					</td>
+					<td>
+						{{ o.CoutAcquisition }}
+					</td>
+					<td>
+						{{ o.CoutMaintenance }} 
+					</td>
+					<td>
+					    {{ o.CoutFormation }}
+					</td>
+					<td>
+					    {{ o.CoutSupport }}
+					</td>
+					<td>
+					    {{ o.Logiciel }}
+					</td>
+				</tr>
+				{% endfor %}	
+			</table>
+			<br />
+			<br />
+			<br />
+			<a href="javascript:void(0);" onclick="showFormAddCoutAnnuel();">Ajouter un co&ucirc;t annuel</a>
+		</div>
+		
+		<div id="tabs-3">
+			<table border="1" cellspacing="3" cellpadding="3">
+				<caption>Discussion logiciel</caption>
+				<tr>
+					<th>
+						Date
+					</th>
+					<th>
+						commentaire de modification
+					</th>
+					<th>
+						Logiciel
+					</th>
+				</tr>
+				{% for o in lst_discussion_logiciel %}
+				<tr>
+					<td>
+						{{ o.date }}
+					</td>
+					<td>
+						{{ o.commentaireModif }}
+					</td>
+					<td>
+						{{ o.Logiciel }} 
+					</td>
+				</tr>
+				{% endfor %}	
+			</table>
+			<br />
+			<br />
+			<br />
+			<a href="javascript:void(0);" onclick="showFormAddDiscussionLogiciel();">Ajouter une discussion logiciel.</a>
+		</div>
+		
+		<div id="tabs-4">
+			<table border="1" cellspacing="3" cellpadding="3">
+				<caption>Sources</caption>
+				<tr>
+					<th>
+						R&eacute;f&eacute;rence
+					</th>
+					<th>
+						Logiciel
+					</th>
+				</tr>
+				{% for o in lst_sources %}
+				<tr>
+					<td>
+						{{ o.Reference }}
+					</td>
+					<td>
+						{{ o.Logiciel }}
+					</td>
+				</tr>
+				{% endfor %}	
+			</table>
+			<br />
+			<br />
+			<br />
+			<a href="javascript:void(0);" onclick="showFormAddSources();">Ajouter une source</a>
+		</div>
+		
+	</div>
+	<script>
+	$(function() {
+		$( "#tabs" ).tabs();
+	});
+	{% if successAdd == 1 %}
+	alert('Le cout adherance a été ajoute avec succes!');
+	{% endif %}
+	</script>
+<script>
+	function showForm(what) {
+		$( "#dialog" ).dialog({modal:true,width:400,height:350});
+	}
+	function showFormAddCoutAnnuel() {
+		$( "#dialogAddCoutAnnuel" ).dialog({modal:true, width:500, height:350});
+	} 
+	function showFormAddDiscussionLogiciel() {
+		$( "#dialogAddDiscussionLogiciel" ).dialog({modal:true, width:500, height:350});
+	} 
+	function showFormAddSources() {
+		$( "#dialogAddSources" ).dialog({modal:true, width:400, height:250});
+	} 
+	
+	/*$( "form#add_cout_annuel" ).submit(function(){
+		alert("Okay");
+		$.post("fillDatabaseTco/cout_annuel/add", form.cleaned_data	
+		);
+	});*/
+	</script>
+	
+<div id="dialogAddSources" title="Ajouter une discussion logiciel" style="display: none">
+	<h2>Veuillez entrer les donn&eacute;es pour une source.</h2>
+	<form method="post" action="" name="frm-add-sources" id="add_sources">
+		{% csrf_token %}
+		<input type="hidden" value="add_sources" name="action" />
+		<table border="0" cellspacing="0" cellpadding="0" class="form">
+					<tr>
+						<td width="200" align="right" valign="top"><label for="">R&eacute;f&eacute;rence</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formSources.Reference }}</td>
+						<td align="left">{{ formSources.Reference.errors }}</td>
+					</tr>	
+					<tr>
+						<td width="300" align="right" valign="top"><label for="">Logiciel</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formSources.Logiciel }}</td>
+						<td align="left">{{ formSources.Logiciel.errors }}</td>
+					</tr>			
+					<tr>
+						<td align="center" colspan="4">
+							<br>
+							<table align="center" class="normal">
+								<tr>
+									<td>
+										<input type="submit" value="Ajouter" />
+									</td>
+									<td>
+										<input type="submit" name="action" value="Annuler" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+	</form>
+</div>	
+
+<div id="dialogAddDiscussionLogiciel" title="Ajouter une discussion logiciel" style="display: none">
+	<h2>Veuillez entrer les donnees pour une discussion logiciel</h2>
+	<form method="post" action="" name="frm-add-discussion-logiciel" id="add_discussion_logiciel">
+		{% csrf_token %}
+		<input type="hidden" value="add_discussion_logiciel" name="action" />
+		<table border="0" cellspacing="0" cellpadding="0" class="form">
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Date</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formDiscussionLogiciel.date }}</td>
+						<td align="left">{{ formDiscussionLogiciel.date.errors }}</td>
+					</tr>
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Commentaire modification</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formDiscussionLogiciel.commentaireModif }}</td>
+						<td align="left">{{ formDiscussionLogiciel.commentaireModif.errors }}</td>
+					</tr>
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Logiciel</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formDiscussionLogiciel.Logiciel }}</td>
+						<td align="left">{{ formDiscussionLogiciel.Logiciel.errors }}</td>
+					</tr>
+					
+					<tr>
+						<td align="center" colspan="4">
+							<br>
+							<table align="center" class="normal">
+								<tr>
+									<td>
+										<input type="submit" value="Ajouter" />
+									</td>
+									<td>
+										<input type="submit" name="action" value="Annuler" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+	</form>
+</div>	
+<div id="dialogAddCoutAnnuel" title="Ajouter un co&ucirc;t annuel" style="display: none">
+	<h2>Veuillez entrer les donnees pour le co&ucirc;t annuel</h2>
+	<form method="post" action="" name="frm-add-annuel" id="add_cout_annuel">
+		{% csrf_token %}
+		<input type="hidden" value="add_annuel" name="action" />
+		<table border="0" cellspacing="0" cellpadding="0" class="form">
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Ann&eacute;e</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formCoutAnnuel.Annee }}</td>
+						<td align="left">{{ formCoutAnnuel.Annee.errors }}</td>
+					</tr>
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Co&ucirc;t d'acquisition</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formCoutAnnuel.CoutAcquisition }}</td>
+						<td align="left">{{ formCoutAnnuel.CoutAcquisition.errors }}</td>
+					</tr>
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Co&ucirc;t de maintenance</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formCoutAnnuel.CoutMaintenance }}</td>
+						<td align="left">{{ formCoutAnnuel.CoutMaintenance.errors }}</td>
+					</tr>
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Co&ucirc;t de formation</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formCoutAnnuel.CoutFormation }}</td>
+						<td align="left">{{ formCoutAnnuel.CoutFormation.errors }}</td>
+					</tr>
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Co&ucirc;t de support</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formCoutAnnuel.CoutSupport }}</td>
+						<td align="left">{{ formCoutAnnuel.CoutSupport.errors }}</td>
+					</tr>
+					<tr>
+						<td width="100" align="right" valign="top"><label for="">Logiciel</label></td>
+						<td width="10" align="center" valign="top">:</td>
+						<td align="left">{{ formCoutAnnuel.Logiciel }}</td>
+						<td align="left">{{ formCoutAnnuel.Logiciel.errors }}</td>
+					</tr>
+					
+					<tr>
+						<td align="center" colspan="4">
+							<br>
+							<table align="center" class="normal">
+								<tr>
+									<td>
+										<input type="submit" value="Ajouter" />
+									</td>
+									<td>
+										<input type="submit" name="action" value="Annuler" />
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+	</form>
+</div>
+<div id="dialog" title="Ajouter un cout d'adhérance" style="display: none;">
+	<h2>Veuillez entrer les donnees pour le cout d'adhérance</h2>
+	<form method="post" action="" name="frm-add-adherance">
+		{% csrf_token %}
+		<input type="hidden" value="add_adherance" name="action" />
+		<table>
+		  <tr>
+		    <th align="left">Niveau</th>
+		    <td>:</td>
+		    <td>
+				<select name="Niveau">
+				{% for o in lst_niveau %}
+				<option value="{{ o.idNiveau }}">{{ o.Niveau }}</option>
+				{% endfor %}
+				</select>
+		    </td>
+		  </tr>
+		  <tr>
+		    <th align="left">Logiciel</th>
+		    <td>:</td>
+		    <td>
+				<select name="Logiciel">
+				{% for o in lst_logiciel %}
+				<option value="{{ o.idLogiciel }}">{{ o.Nom }}</option>
+				{% endfor %}
+				</select>
+		    </td>
+		  </tr>
+		  <tr>
+		    <th align="left">Logiciel Référence</th>
+		    <td>:</td>
+		    <td>
+				<select name="LogicielRef">
+				{% for o in lst_logiciel %}
+				<option value="{{ o.idLogiciel }}">{{ o.Nom }}</option>
+				{% endfor %}
+				</select>
+		    </td>
+		  </tr>
+		  <tr> 
+		    <th align="left">Logiciel cout évolution</th>
+		    <td>:</td>
+		    <td>
+					<input type="text" value="" name="CoutEvolution" />
+		    </td>
+		  </tr>
+		  <tr>
+		    <th align="left">Logiciel de substitution</th>
+		    <td>:</td>
+		    <td>
+				<input type="text" value="" name="CoutSubstitution" />
+		    </td>
+		  </tr>
+		  <tr>
+			<td colspan="2">
+				<input type="submit" name="submit" value="Ajouter" />
+		    </td>
+		  </tr>
+		</table>
+	</form>
+</div>	
+ -->­
+{% endif %}
+{% endblock %}
+

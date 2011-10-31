@@ -1,8 +1,12 @@
-function GridConfigFactory(protoEntityName) {
+function GridConfigFactory(protoEntityName, protoAppCode) {
 
     protoStore = new Ext.data.JsonStore({
         autoLoad: true,
-        baseParams: {},
+        baseParams: {
+        	protoFilter : '1=2', 
+        	protoApp : protoAppCode, 
+        	protoEntity : protoEntityName,  
+        },
         remoteSort: true,
         sortInfo: {
             field: 'id',
