@@ -1,6 +1,36 @@
 
 
-function newDjangoGrid(protoEntityName) {
+function newDjangoGrid(protoEntityName, protoAppCode ) {
+	
+	
+	// Store MASTER
+    protoStore = new Ext.data.JsonStore({
+    autoLoad: true,
+    baseParams: {
+    	protoFilter : {'id' : 0,}, 
+    	protoApp : protoAppCode, 
+    	protoEntity : protoEntityName,  
+    	},
+    	
+    remoteSort: true,
+    sortInfo: {
+        field: 'id',
+        direction: 'DESC'
+    	},
+
+	// Son los mismos para todas las grillas     
+    proxy: new Ext.data.HttpProxy({
+        url: 'protoExtjsGridDefinition/?' + protoEntityName,
+        method: 'POST'
+    	}),
+
+    reader: new Ext.data.JsonReader({
+        root: 'rows',
+        id: 'id'
+    	})
+	})
+
+
 	
 	var masterGrid = GridConfigFactory(protoEntityName);
 	// var detailGrid = GridConfigFactory("Domain");
@@ -13,22 +43,7 @@ function newDjangoGrid(protoEntityName) {
             text:'Details',
             // iconCls: 'bmenu',  // <-- icon
             menu: menu  // assign menu by instance
-       }, '->',
-
-       new Ext.Toolbar.SplitButton({
-            text: 'Load data',
-            handler: onButtonClick,
-            // tooltip: {text:'This is a an example QuickTip for a toolbar item', title:'Tip Title'},
-            // iconCls: 'blist',
-            // Menus can be built/referenced by using nested menu config objects
-            menu : {
-                items: [{
-                    text: '<b>New filter<b>', handler: onItemClick
-                }, {
-                    text: 'add filter', handler: onItemClick
-                }]
-            }
-    	})
+       }, '->'
 	);
 
     // items can easily be looked up
@@ -36,16 +51,18 @@ function newDjangoGrid(protoEntityName) {
     menu.add({
         text: 'Promote Detail',
         id: 'promoteDetail',  
-        disabled: true   
-    });
-
-    var colStore = new Ext.data.ArrayStore({
-        fields: ['colPhysique', 'colName'],
-        data : []  
+        disabled: true,    
     });
 
 
     // add a combobox to the toolbar
+    var colStore = new Ext.data.ArrayStore({
+        fields: ['colPhysique', 'colName'],
+        data : [
+        	['id', 'id'], 
+        ]  
+    });
+
     var combo = new Ext.form.ComboBox({
         store: colStore,
         displayField: 'colName',
@@ -58,11 +75,60 @@ function newDjangoGrid(protoEntityName) {
     });
     tb.addField(combo);
 
+	// combo - operation 
+    var comboOp = new Ext.form.ComboBox({
+        width:			50,
+	    mode:           'local',
+	    triggerAction:  'all',
+	    forceSelection: true,
+	    editable:       false,
+	    fieldLabel:     'Op',
+        name:           'operation',
+        hiddenName:     'operation',
+        displayField:   'operation',
+        valueField:     'code',
+	    value:          'exact',
+        store:          new Ext.data.ArrayStore({
+        	fields : ['operation', 'code'],
+            data   : [
+                ['=',  'exact'],
+                ['>',  'graterthan'],
+                ['<>',  'notequal'],
+            ]
+        })
+        
+    });
+    tb.addField(comboOp);
+
+
+	// Criteria 
 	var searchCr =  new Ext.form.TextField({
         emptyText:'search criteria ..',
         width:135
 	})
     tb.addField(searchCr);
+
+
+
+	// Seach button 
+	var searchBtn = new Ext.Toolbar.SplitButton({
+            text: 'Load data',
+            handler: onButtonClick,
+            // tooltip: {text:'This is a an example QuickTip for a toolbar item', title:'Tip Title'},
+            // iconCls: 'blist',
+            // Menus can be built/referenced by using nested menu config objects
+            menu : {
+                items: [{
+                    text: '<b>New filter<b>', handler: onItemClick
+                }, {
+                    text: 'add filter', handler: onItemClick
+                }]
+            }})
+
+    tb.addField(searchBtn);
+
+	//
+
     tb.doLayout();
 
 	// Panel de detalles ==================================================================================
