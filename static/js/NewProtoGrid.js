@@ -1,15 +1,15 @@
 
 
-function newDjangoGrid(protoEntityName, protoAppCode ) {
+function newDjangoGrid(protoAppCode, protoConcept ) {
 	
 	
-	// Store MASTER
+	// Store MASTER   ================================================================================
     protoStore = new Ext.data.JsonStore({
     autoLoad: true,
     baseParams: {
-    	protoFilter : {'id' : 0,}, 
+    	protoFilter : '{"pk" : 0,}',  
     	protoApp : protoAppCode, 
-    	protoEntity : protoEntityName,  
+    	protoConcept : protoConcept,  
     	},
     	
     remoteSort: true,
@@ -20,7 +20,7 @@ function newDjangoGrid(protoEntityName, protoAppCode ) {
 
 	// Son los mismos para todas las grillas     
     proxy: new Ext.data.HttpProxy({
-        url: 'protoExtjsGridDefinition/?' + protoEntityName,
+        url: 'protoExtjsGridDefinition/?' + protoConcept,
         method: 'POST'
     	}),
 
@@ -32,7 +32,7 @@ function newDjangoGrid(protoEntityName, protoAppCode ) {
 
 
 	
-	var masterGrid = GridConfigFactory(protoEntityName);
+	var masterGrid = GridConfigFactory(protoConcept);
 	// var detailGrid = GridConfigFactory("Domain");
 
 
@@ -89,11 +89,32 @@ function newDjangoGrid(protoEntityName, protoAppCode ) {
         valueField:     'code',
 	    value:          'exact',
         store:          new Ext.data.ArrayStore({
-        	fields : ['operation', 'code'],
+        	fields : [ 'code', 'operation'],
             data   : [
-                ['=',  'exact'],
-                ['>',  'graterthan'],
-                ['<>',  'notequal'],
+
+				['icontains',	'*_*'],
+				['iendswith',	'*_'],
+				['istartswith',	'_*'],
+				['iexact',		'='],
+				['in',			'(_,_)'],
+				['--',			''],
+
+				['gt',			'>'],
+				['gte',			'>='],
+				['lt',			'<'],
+				['lte',			'<='],
+				['range',		'(..)'],
+				['--',			''],
+
+				['day',			'DD'],
+				['month',		'MM'],
+				['week_day',	'WD'],
+				['year',		'YY'],
+				['--',			''],
+
+				['isnull',		'null'],
+				['iregex',		'regex'],
+
             ]
         })
         
@@ -140,7 +161,7 @@ function newDjangoGrid(protoEntityName, protoAppCode ) {
 
 	//  Crea una ventana     ===================================================================================  
     var newWin2 = new Ext.Window({
-        title: protoEntityName
+        title: protoConcept
         
         ,width:600
         ,height:400
@@ -222,14 +243,14 @@ function newDjangoGrid(protoEntityName, protoAppCode ) {
         // Ext.example.msg('Menu Click', 'You clicked the "{0}" menu item.', item.text);
  	   	// console.log( 'vTab', vTab ) ;
         
-        protoEntityName = item.text; 
-        protoEntityName = "Domain"; 
+        protoConcept = item.text; 
+        protoConcept = "Domain"; 
         
-        var tab = protoTabs.items.find(function(i){return i.title === protoEntityName;});
+        var tab = protoTabs.items.find(function(i){return i.title === protoConcept;});
         if(!tab) {
-		detailGrid =  GridConfigFactory(protoEntityName);
+		detailGrid =  GridConfigFactory(protoConcept);
 
-		addTab( protoEntityName, detailGrid ); 
+		addTab( protoConcept, detailGrid ); 
         }
     }
    

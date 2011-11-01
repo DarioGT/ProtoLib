@@ -432,6 +432,7 @@ class AdminSite(object):
                         app_dict[app_name]['models'].append(model_dict)
                     else:
                         app_dict[app_name] = {
+                            'code': app_label,
                             'name': app_name.title(),
                             'app_url': app_label + '/',
                             'has_module_perms': has_module_perms,
@@ -504,6 +505,7 @@ class AdminSite(object):
                             app_dict[app_name]['models'].append(model_dict)
                         else:
                             app_dict[app_name] = {
+                                'code': app_label,
                                 'name': app_name.title(),
                                 'app_url': app_label + '/',
                                 'has_module_perms': has_module_perms,

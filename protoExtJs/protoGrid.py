@@ -59,30 +59,35 @@ class ProtoGridFactory(object):
                 fdict['xtype'] = 'datecolumn' 
                 fdict['dateFormat'] = 'Y-m-d'
                 fdict['format'] = 'Y-m-d'
-                #fdict['renderer'] = 'Ext.util.'
+                #fdict['renderer'] = 'Ext.util.' 
                 #fdict['editor'] = "new Ext.form.DateField({format:'Y-m-d'})"
                 
                 
             elif field.__class__.__name__ == 'IntegerField':
                 fdict['xtype'] = 'numbercolumn'
                 #fdict['editor'] = 'new Ext.form.NumberField()'
+                
             elif field.__class__.__name__ == 'BooleanField':
                 fdict['xtype'] = 'booleancolumn'
                 #fdict['editor'] = 'new Ext.form.Checkbox()'
+                
             elif field.__class__.__name__ == 'DecimalField':
                 fdict['xtype'] = 'numbercolumn '
                 fdict['renderer'] = 'function(v) {return (v.toFixed && v.toFixed(2) || 0);}'
                 #fdict['editor'] = 'new Ext.form.NumberField()'
+                
             elif  field.__class__.__name__ == 'ForeignKey':
                 pass
                 # renderer : display FK str
                 # choices
+                
             elif field.choices:
                 #print 'FIELD CHOICES', field.choices
                 a = {}
                 for c in field.choices:
                     a[c[0]] = c[1]
                 fdict['renderer'] = 'function(v) {a = %s; return a[v] || "";}' % utils.JSONserialise(a)
+                
             if getattr(self.Meta, 'fields_conf', {}).has_key(field.name):
                 fdict.update(self.Meta.fields_conf[field.name])
                 
@@ -96,11 +101,15 @@ class ProtoGridFactory(object):
             if f.get('name') == name:
                 return f
         return None
+    
+    
     def get_base_field(self, name):  
         for f in self.base_fields:
             if f.name == name:
                 return f
         return None
+    
+    
     def get_fields(self, colModel):  
         """ return this grid field list
             . can include hidden fields
@@ -177,6 +186,8 @@ class ProtoGridFactory(object):
 
         base_fields = self.get_fields(colModel)
         
+        protoDetails = self.get_details()
+        
         # todo : stupid ?
         id_field = base_fields[0]['name']
             
@@ -216,16 +227,18 @@ class ProtoGridFactory(object):
         order = []
         fields_conf = {}
 
+    def get_details(self):  
+        Concept = models.get_model('metaDb', 'Concept')
+ 
+#        'protoDetails': {'Concpet1': 'Id = %Id','Concept2': 'Id = %Id'} 
+        return "{'Concpet1': 'Id = %Id','Concept2': 'Id = %Id'}"
+
+
 
 #Json MSG 
 #
 #{
 #    'succes': True,
-#    'tabs': [{
-#        'T1': ['Col1', 'Col2']
-#    }, {
-#        'T2': ['Col3', 'Col2']
-#    }],
 #    'totalCount': 58,
 #    'rows': [{
 #        'category': '', 'metaobj_ptr': u 'Model', 'id': u '217'
@@ -245,9 +258,21 @@ class ProtoGridFactory(object):
 #            'name': 'superConcept',
 #            'tooltip': u 'Super table'
 #        }],
+
+#        ,'protoTabs':[
+#             {'T1': ['Col1','Col2']}, 
+#             {'T2': ['Col3','Col2']},
+#             ]    
+#        ,'protoDetails': {
+#             'Concpet1': 'Id = %Id', 
+#             'Concept2': 'Id = %Id'
+#         } 
+
 #        'successProperty': 'success',
 #        'totalProperty': 'totalCount',
 #        'idProperty': 'id',
+
+
 #        'root': 'rows'
 #    }
 #}
