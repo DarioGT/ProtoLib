@@ -135,9 +135,7 @@ function newDjangoGrid(protoEntityName) {
 
 		}
 
-    // // Agregar
-    // // adding and removing elements dynamically
-    // menu.items.get('promoteDetail').disable();
+    	menu.items.get('promoteDetail').enable();
 // 
 // 
 	// // Columnas para el Query
@@ -161,19 +159,12 @@ function newDjangoGrid(protoEntityName) {
         protoEntityName = item.text; 
         protoEntityName = "Domain"; 
         
-        // region = Ext.getCmp( 'regionDetail' ); 
+        var tab = protoTabs.items.find(function(i){return i.title === protoEntityName;});
+        if(!tab) {
 		detailGrid =  GridConfigFactory(protoEntityName);
 
 		addTab( protoEntityName, detailGrid ); 
-
-		// detailGrid.render( detailEI )
-		// detailPanel.doLayout();
-		// detailPanel.show();
-		
-    	// region.title = 'Cambio..';
-      	// region.items = detailGrid;
-
-		// .items = detailGrid 
+        }
     }
    
    newWin2.show();
