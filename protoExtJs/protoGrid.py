@@ -208,10 +208,7 @@ class ProtoGridFactory(object):
                      {'T1': ['Col1','Col2']}, 
                      {'T2': ['Col3','Col2']},
                      ]    
-                ,'protoDetails': {
-                     'Concpet1': 'Id = %Id', 
-                     'Concept2': 'Id = %Id'
-                 } 
+                ,'protoDetails': protoDetails
             }
             ,'rows':self.get_rows(base_fields, queryset, start, limit)
             ,'totalCount':totalcount
@@ -228,51 +225,22 @@ class ProtoGridFactory(object):
         fields_conf = {}
 
     def get_details(self):  
-        Concept = models.get_model('metaDb', 'Concept')
  
-#        'protoDetails': {'Concpet1': 'Id = %Id','Concept2': 'Id = %Id'} 
-        return "{'Concpet1': 'Id = %Id','Concept2': 'Id = %Id'}"
+        # Obtiene el nombre de la entidad 
+        nomConcept = self.model._meta.object_name 
+        
+        # Clase conceptos  
+        # El resultado de filter es siempre una colecion, el get() haria el mismo efecto q [0]  traer el primer elemento       
+#        mConcept = models.get_model('metaDb', 'Concept').objects.filter( code = nomConcept ).get()
+ 
+        cllRelationship = models.get_model('metaDb', 'Relationship').objects.filter( baseConcept = nomConcept )
+ 
+        # Recorre las relaciones 
+        # protoDetails = "{'Concpet1': 'Id = %Id',  'Concept2': 'Id = %Id'}"
+        protoDetails = {}
+        for mRelation in cllRelationship:
+            protoDetails[ mRelation.concept.code ] = 'id = %id' 
+         
+        return protoDetails
 
 
-
-#Json MSG 
-#
-#{
-#    'succes': True,
-#    'totalCount': 58,
-#    'rows': [{
-#        'category': '', 'metaobj_ptr': u 'Model', 'id': u '217'
-#    }],
-#    'metaData': {
-#        'sortInfo': {
-#            'field': 'id',
-#            'direction': 'ASC'
-#        },
-#        'fields': [{
-#            'header': 'id',
-#            'name': 'id',
-#            'tooltip': u 'ID',
-#            'id': 'id'
-#        }, {
-#            'header': 'superConcept',
-#            'name': 'superConcept',
-#            'tooltip': u 'Super table'
-#        }],
-
-#        ,'protoTabs':[
-#             {'T1': ['Col1','Col2']}, 
-#             {'T2': ['Col3','Col2']},
-#             ]    
-#        ,'protoDetails': {
-#             'Concpet1': 'Id = %Id', 
-#             'Concept2': 'Id = %Id'
-#         } 
-
-#        'successProperty': 'success',
-#        'totalProperty': 'totalCount',
-#        'idProperty': 'id',
-
-
-#        'root': 'rows'
-#    }
-#}
