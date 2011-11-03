@@ -60,8 +60,8 @@ class ProtoGridFactory(object):
                 mUdps = None
 
             # Verifica la UDP 
-            fdict['allowFilter'] = self.getUdp( mUdps, 'allowFilter', 'Boolean', 'False' )
-            fdict['allowSort'] = self.getUdp( mUdps, 'allowSort', 'Boolean', 'True' )
+            fdict['allowFilter'] = self.getUdp( mUdps, 'allowFilter', 'Boolean', 1 )
+            fdict['allowSort'] = self.getUdp( mUdps, 'allowSort', 'Boolean', 1 )
             
             if getattr(field, 'verbose_name', None) and field.verbose_name != field.name:
                 fdict['tooltip'] = u'%s' %  field.verbose_name
@@ -258,6 +258,7 @@ class ProtoGridFactory(object):
          
         return protoDetails
 
+
     def getUdp( self, mUdps, udpCode , udpType, udpDefault ):
         
         udpReturn = udpDefault
@@ -270,8 +271,8 @@ class ProtoGridFactory(object):
             udpReturn = mUdp.valueUdp
             
             if ( udpType == 'Boolean' ) and (udpReturn[0].lower() in ( 't','y','o', '1')): 
-                udpReturn = True
-            else: udpReturn = False 
+                udpReturn = 1
+            else: udpReturn = 0
              
         except: 
             pass

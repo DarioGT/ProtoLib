@@ -44,7 +44,10 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 			this.on("columnresize", this.saveColumModel, this);
 		}
 
-
+		//  Declara y relanza los eventos 
+		// this.on("itemclick", this.itemclick, this);
+		this.on("itemclick", function() {alert('itemclick')}, this);
+		
 		this.on("show", this.onShow, this);
 		//    this.on("render", this.onRender, this);
 
@@ -225,7 +228,7 @@ ProtoAutoGrid =  Ext.extend(ProtoAutoGridPanel, {
      // })
 
     ,initComponent:function() {
-        this.pagesize = this.pagesize || 10;
+        this.pagesize = this.pagesize || 50;
         
         if (this.showBbar) this.bbar = new Ext.PagingToolbar({
                 pageSize: this.pagesize,

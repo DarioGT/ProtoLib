@@ -14,6 +14,15 @@ function GridConfigFactory(protoAppCode, protoEntityName, protoStore) {
 
         store: protoStore,
         
+        // listeners: {
+            // itemclick: function () {
+                // var data = grid_company.getSelectionModel().selected.items[0].data;
+                // grid_product.setTitle(data.name + ' Products List');
+                // store_product.clearFilter();
+                // store_product.filter('company_id', data.id);
+                // store_product.load();
+            // }
+        // }
 
     });
 

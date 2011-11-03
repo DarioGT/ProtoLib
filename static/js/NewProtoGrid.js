@@ -26,7 +26,6 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
 	    reader: protoReader 
 		});
 
-
 	
 	var masterGrid = GridConfigFactory(protoAppCode, protoConcept, protoMasterStore);
 	// var detailGrid = GridConfigFactory("Domain");
@@ -55,9 +54,7 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
     // add a combobox to the toolbar
     var colStore = new Ext.data.ArrayStore({
         fields: ['colPhysique', 'colName'],
-        data : [
-        	['id', 'id'], 
-        ]  
+        data : [],
     });
 
     var combo = new Ext.form.ComboBox({
@@ -222,18 +219,39 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
     	   menu.items.get( menuPromDetail ).enable();
    		}; 
 
-	// // Columnas para el Query
-	 // colStore.data =     [
-        // ['id', 'Id Reg'],
-        // ['code', 'Code Reg']
-    // ];
-
-
+		// Columnas para el Query del tipo :  newColData = [['idx', 'Id Reg'],['code', 'Code Reg']];
+		newColData = []; j = 0;
+		for ( var i = 0, len = meta.fields.length; i < len; i++) {
+			c = meta.fields[i];
+			if (c.allowFilter == undefined) { c.allowFilter = 1 };  
+			if (c.allowFilter !== 0) {
+				newColData[j] = [c.name,c.header]; j += 1;
+			 // colStore.add(new colStore.recordType({ colPhysique: c.name, colName: c.header }));
+			}
+		};
+		colStore.loadData(newColData);
    });
+
+
+   // Carga del maestro detalle --------------------------------------------------------------------------- 
+   masterGrid.on ( 'itemclick' , function() {
+        var data = masterGrid.getSelectionModel().selected.items[0].data;
+ 	   	console.log( 'MasterId', data ) ;
+		
+        // store_product.clearFilter();
+        // store_product.filter('company_id', data.id);
+        // store_product.load();
+	}); 
+
 
     // functions to display feedback
     function onButtonClick(btn){
         // Ext.example.msg('Button Click','You clicked the "{0}" button.', btn.text);
+
+		protoMasterStore.clearFilter();
+	    protoMasterStore.baseParams.protoFilter = '';  
+		protoMasterStore.load();
+
     }
 
     function onItemClick(item){
