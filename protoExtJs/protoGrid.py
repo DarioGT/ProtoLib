@@ -7,6 +7,7 @@ from utils import VirtualField
 
 class ProtoGridFactory(object):
 
+
     def __init__(self, model):
             
         self.model = model          # the model to use as reference
@@ -14,7 +15,13 @@ class ProtoGridFactory(object):
         self.base_fields = []       # holds the base model fields
         
         model_fields = self.model._meta._fields()
-        excludes = getattr(self.Meta, 'exclude', ['id'])
+        excludes = getattr(self.Meta, 'exclude', [])
+
+        # Obtiene el nombre de la entidad 
+        self.nomConcept = self.model._meta.object_name 
+        
+        # Clase conceptos  
+        mConcept = models.get_model('metaDb', 'Concept').objects.filter( code = self.nomConcept ).get()
 
         
         # reorder cols if needed
@@ -30,16 +37,31 @@ class ProtoGridFactory(object):
                     self.base_fields.append(VirtualField(field))
         else:
             self.base_fields = model_fields
-            
+
         
         for field in self.base_fields:
+
+            
             if field.name in excludes:
                 continue
+
             if field.__class__.__name__ == VirtualField:
                 self.fields.append(self.Meta.fields_conf[field.name])
                 continue
             
+            # Field Attrs   ------------------------------------------------------------------
             fdict = {'name':field.name, 'header': field.name}
+
+            # Busca  la propiedad 
+            try:
+                mProperty  = mConcept.property_set.get( code = field.name )
+                mUdps = mProperty.udp_set.all()
+            except: 
+                mUdps = None
+
+            # Verifica la UDP 
+            fdict['allowFilter'] = self.getUdp( mUdps, 'allowFilter', 'Boolean', 'False' )
+            fdict['allowSort'] = self.getUdp( mUdps, 'allowSort', 'Boolean', 'True' )
             
             if getattr(field, 'verbose_name', None) and field.verbose_name != field.name:
                 fdict['tooltip'] = u'%s' %  field.verbose_name
@@ -226,14 +248,7 @@ class ProtoGridFactory(object):
 
     def get_details(self):  
  
-        # Obtiene el nombre de la entidad 
-        nomConcept = self.model._meta.object_name 
-        
-        # Clase conceptos  
-        # El resultado de filter es siempre una colecion, el get() haria el mismo efecto q [0]  traer el primer elemento       
-#        mConcept = models.get_model('metaDb', 'Concept').objects.filter( code = nomConcept ).get()
- 
-        cllRelationship = models.get_model('metaDb', 'Relationship').objects.filter( baseConcept = nomConcept )
+        cllRelationship = models.get_model('metaDb', 'Relationship').objects.filter( baseConcept = self.nomConcept )
  
         # Recorre las relaciones 
         # protoDetails = "{'Concpet1': 'Id = %Id',  'Concept2': 'Id = %Id'}"
@@ -243,4 +258,23 @@ class ProtoGridFactory(object):
          
         return protoDetails
 
+    def getUdp( self, mUdps, udpCode , udpType, udpDefault ):
+        
+        udpReturn = udpDefault
+        
+        if not mUdps:
+            return udpReturn 
+        
+        try:
+            mUdp =  mUdps.get( code = udpCode )
+            udpReturn = mUdp.valueUdp
+            
+            if ( udpType == 'Boolean' ) and (udpReturn[0].lower() in ( 't','y','o', '1')): 
+                udpReturn = True
+            else: udpReturn = False 
+             
+        except: 
+            pass
+        
+        return udpReturn
 

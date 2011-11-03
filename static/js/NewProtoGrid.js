@@ -1,43 +1,39 @@
 
 
 function newDjangoGrid(protoAppCode, protoConcept ) {
-	
-	
-	// Store MASTER   ================================================================================
-    protoStore = new Ext.data.JsonStore({
-    autoLoad: true,
-    baseParams: {
-    	protoFilter : '{"pk" : 0,}',  
-    	protoApp : protoAppCode, 
-    	protoConcept : protoConcept,  
-    	},
-    	
-    remoteSort: true,
-    sortInfo: {
-        field: 'id',
-        direction: 'DESC'
-    	},
 
-	// Son los mismos para todas las grillas     
-    proxy: new Ext.data.HttpProxy({
+	// Reader y Proxy  ==============================================================================
+    protoProxy = new Ext.data.HttpProxy({
         url: 'protoExtjsGridDefinition/?' + protoConcept,
         method: 'POST'
-    	}),
+    });
 
-    reader: new Ext.data.JsonReader({
+    protoReader = new Ext.data.JsonReader({
         root: 'rows',
         id: 'id'
-    	})
-	})
+    });
+	
+	// Store MASTER   ================================================================================
+    var protoMasterStore = new Ext.data.JsonStore({
+	    autoLoad: true,
+	    baseParams: {
+	    	protoFilter : '{"pk" : 0,}',  
+	    	protoApp : 	   protoAppCode, 
+	    	protoConcept : protoConcept,  
+	    	},
+	    remoteSort: true,
+	    proxy: protoProxy, 
+	    reader: protoReader 
+		});
 
 
 	
-	var masterGrid = GridConfigFactory(protoConcept);
+	var masterGrid = GridConfigFactory(protoAppCode, protoConcept, protoMasterStore);
 	// var detailGrid = GridConfigFactory("Domain");
 
 
 	// Necesaria para poder agregar cosas dinamicamente   ------------------------------------------------------
-    var menu = new Ext.menu.Menu({ id: 'mainMenu', });
+    var menu = new Ext.menu.Menu();
     var tb = new Ext.Toolbar();
     tb.add({
             text:'Details',
@@ -47,12 +43,13 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
 	);
 
     // items can easily be looked up
-    menu.addSeparator();
+	var menuPromDetail = Ext.id();
     menu.add({
-        text: 'Promote Detail',
-        id: 'promoteDetail',  
+        text: '<b>Promote Detail<b>',
+        id: menuPromDetail ,  
         disabled: true,    
     });
+    menu.addSeparator();
 
 
     // add a combobox to the toolbar
@@ -87,16 +84,14 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
         hiddenName:     'operation',
         displayField:   'operation',
         valueField:     'code',
-	    value:          'exact',
+	    value:          '=',
         store:          new Ext.data.ArrayStore({
         	fields : [ 'code', 'operation'],
             data   : [
-
+				['iexact',		'='],
 				['icontains',	'*_*'],
 				['iendswith',	'*_'],
 				['istartswith',	'_*'],
-				['iexact',		'='],
-				['in',			'(_,_)'],
 				['--',			''],
 
 				['gt',			'>'],
@@ -104,6 +99,7 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
 				['lt',			'<'],
 				['lte',			'<='],
 				['range',		'(..)'],
+				['in',			'(_,_)'],
 				['--',			''],
 
 				['day',			'DD'],
@@ -155,7 +151,7 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
 	// Panel de detalles ==================================================================================
 
 	var detailEI = Ext.id();
-    protoTabs = new Ext.TabPanel({
+    var protoTabs = new Ext.TabPanel({
     	id: detailEI 
     });
 
@@ -206,25 +202,26 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
 	}
 
    // En este evento tengo la metadata 
-   protoStore.on ( 'metachange' , function(store, meta) {
- 	   console.log( 'metaProto', meta ) ;
+   protoMasterStore.on ( 'metachange' , function(store, meta) {
+ 	   // console.log( 'metaProto', meta ) ;
  	   var pDetails = meta.protoDetails ; 
- 	 
+	   var bDetails = false;
+	    
  	   for (var vTab in pDetails) {
- 	   		// console.log( 'vTab', vTab ) ;
  			// console.log( pDetails[vTab] + " ");
- 			
+			bDetails = true; 			
 		    var item = menu.add({
 		        text: vTab
 		    });
 		    // items support full Observable API
 		    item.on('click', onItemClick);
 
-		}
+		};
+ 	 
+		if (bDetails == true) {
+    	   menu.items.get( menuPromDetail ).enable();
+   		}; 
 
-    	menu.items.get('promoteDetail').enable();
-// 
-// 
 	// // Columnas para el Query
 	 // colStore.data =     [
         // ['id', 'Id Reg'],
@@ -243,15 +240,28 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
         // Ext.example.msg('Menu Click', 'You clicked the "{0}" menu item.', item.text);
  	   	// console.log( 'vTab', vTab ) ;
         
-        protoConcept = item.text; 
-        protoConcept = "Domain"; 
+        var protoDetail = item.text; 
         
-        var tab = protoTabs.items.find(function(i){return i.title === protoConcept;});
+        var tab = protoTabs.items.find(function(i){return i.title === protoDetail;});
         if(!tab) {
-		detailGrid =  GridConfigFactory(protoConcept);
+        	
+       		var protoDetailStore = new Ext.data.JsonStore({
+			    autoLoad: true,
+			    baseParams: {
+			    	protoFilter : '{"pk" : 0,}',  
+			    	protoApp : 	   protoAppCode, 
+			    	protoConcept : protoDetail,  
+			    	},
+			    remoteSort: true,
+			    proxy: protoProxy, 
+			    reader: protoReader 
+				});
 
-		addTab( protoConcept, detailGrid ); 
-        }
+			var detailGrid = GridConfigFactory(protoAppCode, protoDetail, protoDetailStore);
+			tab = addTab( protoDetail, detailGrid ); 
+        };
+	    protoTabs.setActiveTab(tab);
+
     }
    
    newWin2.show();

@@ -1,4 +1,4 @@
-function GridConfigFactory(protoEntityName, protoAppCode) {
+function GridConfigFactory(protoAppCode, protoEntityName, protoStore) {
 
     var protoGrid = new ProtoAutoGrid({
         autoWidth: true,
