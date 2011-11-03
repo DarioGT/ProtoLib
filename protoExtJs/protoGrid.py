@@ -250,11 +250,11 @@ class ProtoGridFactory(object):
  
         cllRelationship = models.get_model('metaDb', 'Relationship').objects.filter( baseConcept = self.nomConcept )
  
-        # Recorre las relaciones 
-        # protoDetails = "{'Concpet1': 'Id = %Id',  'Concept2': 'Id = %Id'}"
+        # TODO: Deberia recorrer los vinculos y no las relacion,  ojo con la llave 
+        # Recorre las relaciones : protoDetails = "{'Concpet1': 'Id = %Id',  'Concept2': 'Id = %Id'}"
         protoDetails = {}
         for mRelation in cllRelationship:
-            protoDetails[ mRelation.concept.code ] = 'id = %id' 
+            protoDetails[ mRelation.concept.code ] = mRelation.baseConcept.lower() + '__id'
          
         return protoDetails
 

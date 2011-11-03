@@ -45,9 +45,6 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 		}
 
 		//  Declara y relanza los eventos 
-		// this.on("itemclick", this.itemclick, this);
-		this.on("itemclick", function() {alert('itemclick')}, this);
-		
 		this.on("show", this.onShow, this);
 		//    this.on("render", this.onRender, this);
 
