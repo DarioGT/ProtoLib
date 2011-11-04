@@ -18,6 +18,7 @@ function newDjangoGrid(protoAppCode, protoConcept) {
             protoFilter: '{"pk" : 0,}',
             protoApp: protoAppCode,
             protoConcept: protoConcept,
+            modelLoad: '1',
         },
         remoteSort: true,
         proxy: protoProxy,
@@ -57,41 +58,8 @@ function newDjangoGrid(protoAppCode, protoConcept) {
     });
     menu.addSeparator();
 
-
-    // add a combobox to the toolbar
-    var colStore = new Ext.data.ArrayStore({
-        fields: ['colPhysique', 'colName'],
-        data: [],
-    });
-
-    var combo = new Ext.form.ComboBox({
-        store: colStore,
-        displayField: 'colName',
-        typeAhead: true,
-        mode: 'local',
-        triggerAction: 'all',
-        emptyText: 'Select a column ...',
-        selectOnFocus: true,
-        width: 135
-    });
-    tb.addField(combo);
-
-    // combo - operation 
-    var comboOp = new Ext.form.ComboBox({
-        width: 50,
-        mode: 'local',
-        triggerAction: 'all',
-        forceSelection: true,
-        editable: false,
-        fieldLabel: 'Op',
-        name: 'operation',
-        hiddenName: 'operation',
-        displayField: 'operation',
-        valueField: 'code',
-        value: '=',
-        store: new Ext.data.ArrayStore({
-            fields: ['code', 'operation'],
-            data: [
+    // TODO: data combo operation  ( sacar a un comboOp.json )
+    dataOp = [
                 ['iexact', '='],
                 ['icontains', '*_*'],
                 ['iendswith', '*_'],
@@ -102,8 +70,8 @@ function newDjangoGrid(protoAppCode, protoConcept) {
                 ['gte', '>='],
                 ['lt', '<'],
                 ['lte', '<='],
-                ['range', '(..)'],
-                ['in', '(_,_)'],
+                // ['range', '(..)'],
+                // ['in', '(_,_)'],
                 ['--', ''],
 
                 ['day', 'DD'],
@@ -113,10 +81,40 @@ function newDjangoGrid(protoAppCode, protoConcept) {
                 ['--', ''],
 
                 ['isnull', 'null'],
-                ['iregex', 'regex'],
+                // ['iregex', 'regex'],
                 ]
-        })
+ 
 
+    // add a combobox to the toolbar
+    var colStore = new Ext.data.ArrayStore({
+        fields: ['colPhysique', 'colName'],
+        data: [],
+    });
+
+    var comboCols = new Ext.form.ComboBox({
+        store: colStore,
+        width: 135,
+        mode: 'local',
+        triggerAction: 'all',
+        displayField: 'colName',
+        valueField: 'colPhysique',
+        forceSelection: true,
+        emptyText: 'Select a column ...',
+        selectOnFocus: true,
+        typeAhead: true,
+    });
+    tb.addField(comboCols);
+
+    // combo - operation 
+    var comboOp = new Ext.form.ComboBox({
+        store: new Ext.data.ArrayStore({ fields: ['code', 'operation'], data: dataOp }),
+        width: 50,
+        mode: 'local',
+        triggerAction: 'all',  
+        displayField: 'operation',
+        valueField: 'code',
+        forceSelection: true,
+        editable: false,
     });
     tb.addField(comboOp);
 
@@ -130,20 +128,18 @@ function newDjangoGrid(protoAppCode, protoConcept) {
 
 
 
-    // Seach button 
+    // Load Data button 
     var searchBtn = new Ext.Toolbar.SplitButton({
         text: 'Load data',
         handler: onClickLoadData,
-        // tooltip: {text:'This is a an example QuickTip for a toolbar item', title:'Tip Title'},
         // iconCls: 'blist',
-        // Menus can be built/referenced by using nested menu config objects
         menu: {
             items: [{
-                text: '<b>New filter<b>',
+                text: '<b>Clear filter<b>',
                 handler: onClickFilter
-            }, {
-                text: 'add filter',
-                handler: onClickFilter
+            // }, {
+                // text: 'add filter',
+                // handler: onClickFilter
             }]
         }
     })
@@ -190,9 +186,12 @@ function newDjangoGrid(protoAppCode, protoConcept) {
         }]
     });
 
-    //  Logica de operacion  ===================================================================================  
+    // ===================================================================================
+    //  Logica de operacion    
+    // ===================================================================================
 
-    // En este evento tengo la metadata 
+
+    // En este evento tengo la metadata  ----------------------------------------------------------------------- 
     protoMasterStore.on('metachange', function (store, meta) {
 
         // para evitar el seteo en cada carga  	   
@@ -232,11 +231,16 @@ function newDjangoGrid(protoAppCode, protoConcept) {
         for (var i = 0, len = meta.fields.length; i < len; i++) {
             var c = meta.fields[i];
 
-            if (c.allowFilter !== undefined) {
+            if (c.allowFilter == undefined) {
                 c.allowFilter = 1
             };
+
+            if (c.queryCode == undefined) { 
+                c.queryCode =  c.name; 
+            };
+            
             if (c.allowFilter == 1) {
-                newColData[j] = [c.name, c.header];
+                newColData[j] = [c.queryCode, c.header];
                 j += 1;
 
                 // DGT: esta carga es directa al store, pienso q es mas costosa por q interactua cada vez con extjs
@@ -263,8 +267,6 @@ function newDjangoGrid(protoAppCode, protoConcept) {
     });
 
     // Refresca las grillas de detalle 
-
-
     function linkDetail(ixTb) {
 
         // Verifica q halla un tab activo 
@@ -278,24 +280,43 @@ function newDjangoGrid(protoAppCode, protoConcept) {
 
         tmpStore.clearFilter();
         tmpStore.baseParams.protoFilterBase = '{"' + tmpStore.protoFilter + '" : ' + idMasterGrid + ',}';
+        tmpStore.baseParams.modelLoad = '0'; 
         tmpStore.protoMasterKey = idMasterGrid;
         tmpStore.load();
         
     };
 
 
-    // functions to load data  
+    // functions to load data  -------------------------------------------------------------------------------
     function onClickLoadData(btn) {
 
+        var sFilter = '';
+
+        if ((comboCols.getValue() == '') && (comboOp.getValue() == '') && (searchCr.getValue() == '' )) {
+            sFilter = '';
+        } else if ((comboCols.getValue() == '') || (comboOp.getValue() == '') || (searchCr.getValue() == '' )) {
+            Ext.Msg.alert('Status', 'Invalid criteria');
+            return; 
+        } else {
+            sFilter = '{"' + comboCols.getValue() + '__' + comboOp.getValue() + '" : "' + searchCr.getValue() + '",}';
+        }
+
         protoMasterStore.clearFilter();
-        protoMasterStore.baseParams.protoFilter = '';
+        protoMasterStore.baseParams.protoFilter = sFilter;
+        protoMasterStore.baseParams.modelLoad = '0';
         protoMasterStore.load();
 
     }
 
 
     // TODO: Manejara los filtros compuestos ( QBE )
-    function onClickFilter(item) {};
+    function onClickFilter(item) {
+        
+        comboCols.setValue('');
+        comboOp.setValue(''); 
+        searchCr.setValue(''); 
+        
+    };
 
 
     // Carga los datos de la grilla con el criterio seleccionado 
@@ -316,6 +337,7 @@ function newDjangoGrid(protoAppCode, protoConcept) {
                     protoFilterBase: '{"' + item.protoFilter + '" : ' + idMasterGrid + ',}',
                     protoApp: protoAppCode,
                     protoConcept: protoDetail,
+                    modelLoad: '1',
                 },
                 remoteSort: true,
                 proxy: protoProxy,
