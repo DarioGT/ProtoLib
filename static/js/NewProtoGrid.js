@@ -32,8 +32,11 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
 	// coleccion con los store de los detalles  y su indice  
 	var cllStoreDet = [];
 	var ixCllStoreDet = 0; 
-	var ixActiveTab = 0;
+	var ixActiveTab = -1;
+	
+	// Id Actual de la grilla master 
 	var idMasterGrid = 0;
+
 
 	// Controla la carga de la metadata 
 	var bMasterMetaLoaded = false;
@@ -195,11 +198,12 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
    
 	//  Logica de operacion  ===================================================================================  
 
- 	function addTab( tabTitle, gridDetail  ){
+ 	function addTab( tabTitle, gridDetail, ixTabC  ){
         tab = protoTabs.add({
             title: tabTitle,
 			layout: 'fit',
-            items: gridDetail
+            items: gridDetail, 
+            ixTab: ixTabC 
     	});
     	protoTabs.setActiveTab(tab);
 	}
@@ -213,17 +217,22 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
  	   
  	   var pDetails = meta.protoDetails ; 
 	   var bDetails = false;
+	   
+	   // Agrega un numero secuencia para marcar los tabs 
+	   var ixTabC = 0 
 	    
  	   for (var vDet in pDetails) {
  			// console.log( pDetails[vTab] + " ");
 			bDetails = true; 			
 		    var item = menu.add({
 		        text: vDet, 
-		        protoFilter : pDetails[vDet]
+		        protoFilter : pDetails[vDet], 
+		        ixTab : ixTabC, 
 		    });
 		    // Agrego el handler q activara el tab a partir del menu
 		    item.on('click', onMenuSelectDetail);
 
+			ixTabC += 1 ;
 		};
  	 
  	 	// activa el boton de promover detalles 
@@ -254,17 +263,33 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
    masterGrid.on ( 'rowclick' , function( g, rowIndex, e) {
         var rec = g.store.getAt(rowIndex);
         idMasterGrid = rec.id 
- 	   	// console.log( 'MasterId', idMasterGrid  ) ;
- 	   	
-        // store_product.clearFilter();
-        // store_product.filter('company_id', data.id);
-        // store_product.load();
+ 	   	linkDetail( ixActiveTab );
 	}); 
 
-
-	protoTabs.on ( 'tabchange', function( tabPanel, tab ){
- 	   	console.log( 'ProtoTab.tabchange', tab  ) ;
+   protoTabs.on ( 'tabchange', function( tabPanel, tab ){
+ 	   	ixActiveTab = tab.ixTab ; 
+ 	   	linkDetail( ixActiveTab );
+ 	   	
 	});
+
+	// Refresca las grillas de detalle 
+    function linkDetail( ixTb ){
+
+		// Verifica q halla un tab activo 
+		if (ixTb < 0){ return; }
+    	
+    	// carga el store 
+		var tmpStore = cllStoreDet[ixTb]
+		
+		// Verifica si la llave cambio
+		if ( idMasterGrid = tmpStore.protoMasterKey ) {return; };  		         
+		         
+		tmpStore.clearFilter();
+	    tmpStore.baseParams.protoFilterBase = '{"' + tmpStore.protoFilter  + '" : ' + idMasterGrid + ',}',  
+		tmpStore.load();
+    	
+    };
+    	
 
 
     // functions to load data  
@@ -295,18 +320,26 @@ function newDjangoGrid(protoAppCode, protoConcept ) {
        		var protoDetailStore = new Ext.data.JsonStore({
 			    autoLoad: true,
 			    baseParams: {
-			    	protoFilter : '{"' + item.protoFilter  + '" : ' + idMasterGrid + ',}',  
+			    	protoFilterBase : '{"' + item.protoFilter  + '" : ' + idMasterGrid + ',}',  
 			    	protoApp : 	   protoAppCode, 
 			    	protoConcept : protoDetail,  
 			    	},
 			    remoteSort: true,
 			    proxy: protoProxy, 
-			    reader: protoReader 
+			    reader: protoReader, 
+			    protoFilter : item.protoFilter,
+			    protoMasterKey : idMasterGrid
 				});
 
+			// guarda el store con el indice apropiado   
+		    cllStoreDet[item.ixTab] = protoDetailStore 
+
 			var detailGrid = GridConfigFactory(protoAppCode, protoDetail, protoDetailStore);
-			tab = addTab( protoDetail, detailGrid ); 
+			tab = addTab( protoDetail, detailGrid, item.ixTab  ); 
         };
+		
+		// 	Marca el tab activo     
+		ixActiveTab = item.ixTab ; 
 	    protoTabs.setActiveTab(tab);
 
     }
