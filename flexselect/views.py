@@ -10,6 +10,7 @@ from flexselect import (FlexSelectWidget, choices_from_instance,
 @login_required
 def field_changed(request):
     """
+    Llamado Ajax para manejo de campos dependientes de los combos 
     Ajax callback called when a trigger field or base field has changed. Returns
     html for new options and details for the dependent field as json.
     """

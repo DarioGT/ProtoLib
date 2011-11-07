@@ -23,11 +23,26 @@ class ProtoGridFactory(object):
         # Clase conceptos  
         mConcept = models.get_model('metaDb', 'Concept').objects.filter( code = self.nomConcept ).get()
 
+        # Get ConcpetsUdp
+        try:
+            mConceptUdps = mConcept.udp_set.all()
+        except: 
+            mConceptUdps = []
+
+#       Dict creation 
+        conceptUpdDict = {}
+
+
+#       DGT: Determina la posicion en la vista, 0 : hiden
+#       viewPosition = id, username, email 
+        self.getUdp( conceptUpdDict, mConceptUdps, 'viewPosition', 'String', '' )
+            
         
-        # reorder cols if needed
-        order = getattr(self.Meta, 'order', None)
-        if order and len(order) > 0:
-            for field in order:
+#       REORDER  (include )  cols if defined  
+        viewPosition = conceptUpdDict.get('viewPosition', '')
+        if viewPosition and len(viewPosition) > 0:
+            viewPosition = [x.strip() for x in viewPosition.split(',')]
+            for field in viewPosition:
                 added = False
                 for f in model_fields:
                     if f.name == field:
@@ -40,17 +55,16 @@ class ProtoGridFactory(object):
 
         
         for field in self.base_fields:
-
             
             if field.name in excludes:
-                continue
-
-            if field.__class__.__name__ == VirtualField:
-                self.fields.append(self.Meta.fields_conf[field.name])
                 continue
             
             # Field Attrs   ------------------------------------------------------------------
             fdict = {'name':field.name, 'header': field.name}
+
+            if field.__class__.__name__ == VirtualField:
+                fdict['allowSort']= '0'
+                continue
 
             # Busca  la propiedad 
             try:
@@ -61,22 +75,39 @@ class ProtoGridFactory(object):
 
             # Verifica la UDP 
             if len(mUdps) > 0 :
-                self.getUdp( fdict, mUdps, 'allowFilter', 'Boolean', '1' )
-                self.getUdp( fdict, mUdps, 'allowSort', 'Boolean', '1' )
+
+#               Col visualisation 
+                self.getUdp( fdict, mUdps, 'hidden', 'Boolean', False)
+
+#               Columns in Query Combo 
+                self.getUdp( fdict, mUdps, 'allowFilter', 'Boolean', True )
+                
+#               The column is sortable  
+                self.getUdp( fdict, mUdps, 'sortable', 'Boolean', True )
+
+#               Permite la sintaxis objeto del QRM  [foreing]__[campo] 
                 self.getUdp( fdict, mUdps, 'queryCode', 'String', '' )
 
-            
-            if getattr(field, 'verbose_name', None) and field.verbose_name != field.name:
-                fdict['tooltip'] = u'%s' %  field.verbose_name
+#               Permite la sintaxis objeto del QRM  [foreing]__[campo] 
+                self.getUdp( fdict, mUdps, 'width', 'Numeric', 0 )
+
+#               Permite la sintaxis objeto del QRM  [foreing]__[campo] 
+                self.getUdp( fdict, mUdps, 'align', 'String', '' )
+
+#               Permite la sintaxis objeto del QRM  [foreing]__[campo] 
+                self.getUdp( fdict, mUdps, 'tooltip', 'String', '' )
+
+#            if getattr(field, 'verbose_name', None) and field.verbose_name != field.name:
+#                fdict['tooltip'] = u'%s' %  field.verbose_name
             
             if field.name == 'id':
                 fdict['id']='id'
                 
-            if  field.__class__.__name__ == 'DateTimeField':
-                fdict['type'] = 'datetime'
-                fdict['xtype'] = 'datecolumn' 
-                fdict['dateFormat'] = 'Y-m-d H:i:s'
-                fdict['format'] = 'Y-m-d H:i:s'
+#            if  field.__class__.__name__ == 'DateTimeField':
+#                fdict['type'] = 'datetime'
+#                fdict['xtype'] = 'datecolumn' 
+#                fdict['dateFormat'] = 'Y-m-d H:i:s'
+#                fdict['format'] = 'Y-m-d H:i:s'
 
                 #fdict['editor'] = "new Ext.ux.form.DateTime({hiddenFormat:'Y-m-d H:i', dateFormat:'Y-m-D', timeFormat:'H:i'})"
             if  field.__class__.__name__ == 'DateField':
@@ -103,18 +134,17 @@ class ProtoGridFactory(object):
                 
             elif  field.__class__.__name__ == 'ForeignKey':
                 pass
-                # renderer : display FK str
-                # choices
+                # renderer : display FK str as hoices  ( trop d'options??  ) 
                 
-            elif field.choices:
-                #print 'FIELD CHOICES', field.choices
-                a = {}
-                for c in field.choices:
-                    a[c[0]] = c[1]
-                fdict['renderer'] = 'function(v) {a = %s; return a[v] || "";}' % utils.JSONserialise(a)
+#            elif field.choices:
+#                #print 'FIELD CHOICES', field.choices
+#                a = {}
+#                for c in field.choices:
+#                    a[c[0]] = c[1]
+#                fdict['renderer'] = 'function(v) {a = %s; return a[v] || "";}' % utils.JSONserialise(a)
                 
-            if getattr(self.Meta, 'fields_conf', {}).has_key(field.name):
-                fdict.update(self.Meta.fields_conf[field.name])
+#            if getattr(self.Meta, 'fields_conf', {}).has_key(field.name):
+#                fdict.update(self.Meta.fields_conf[field.name])
                 
                # print fdict
             self.fields.append(fdict)
@@ -210,7 +240,6 @@ class ProtoGridFactory(object):
             totalcount = queryset.count()
 
         base_fields = self.get_fields(colModel)
-        
         protoDetails = self.get_details()
         
         # todo : stupid ?
@@ -229,10 +258,10 @@ class ProtoGridFactory(object):
                 }
                 ,'fields':base_fields
 
-                ,'protoTabs':[
-                     {'T1': ['Col1','Col2']}, 
-                     {'T2': ['Col3','Col2']},
-                     ]    
+#                ,'protoTabs':[
+#                     {'T1': ['Col1','Col2']}, 
+#                     {'T2': ['Col3','Col2']},
+#                     ]    
                 ,'protoDetails': protoDetails
             }
             ,'rows':self.get_rows(base_fields, queryset, start, limit)
@@ -246,7 +275,7 @@ class ProtoGridFactory(object):
         
     class Meta:
         exclude = []
-        order = []
+        viewPosition = []
         fields_conf = {}
 
     def get_details(self):  
@@ -272,8 +301,13 @@ class ProtoGridFactory(object):
             
             if ( udpType == 'Boolean' ):
                 if (udpReturn[0].lower() in ( 't','y','o', '1')): 
-                    udpReturn = '1'
-                else: udpReturn = '0' 
+                    udpReturn = True
+                else: udpReturn = False 
+
+            if ( udpType == 'Numeric' ):
+                try:
+                    udpReturn = int( udpReturn  )
+                except: udpReturn = udpDefault
 
             if (udpReturn != udpDefault ): 
                 fdict[udpCode] = udpReturn   
@@ -282,3 +316,5 @@ class ProtoGridFactory(object):
             pass
         
         return 
+
+

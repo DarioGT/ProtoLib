@@ -110,7 +110,10 @@ ProtoAutoGridPanel = Ext.extend(Ext.grid.EditorGridPanel, {
 					c.id = 'c' + i;
 				}
 
-				c.sortable = true;
+                if (typeof c.sortable == "undefined") {
+                    c.sortable = true;
+                }
+
 				//delete c.editor;
 				config[config.length] = c;
 				//config[config.length].editor = c.editor;
