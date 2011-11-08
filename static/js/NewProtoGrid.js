@@ -1,4 +1,4 @@
-function newDjangoGrid(protoAppCode, protoConcept) {
+function newDjangoGrid(protoAppCode, protoConcept, protoMasterStore ) {
 
     // Reader y Proxy  ==============================================================================
     protoProxy = new Ext.data.HttpProxy({
@@ -12,18 +12,23 @@ function newDjangoGrid(protoAppCode, protoConcept) {
     });
 
     // Store MASTER   ================================================================================
-    var protoMasterStore = new Ext.data.JsonStore({
-        autoLoad: true,
-        baseParams: {
-            protoFilter: '{"pk" : 0,}',
-            protoApp: protoAppCode,
-            protoConcept: protoConcept,
-            modelLoad: '1',
-        },
-        remoteSort: true,
-        proxy: protoProxy,
-        reader: protoReader
-    });
+    if (typeof protoMasterStore == 'undefined') {
+        var protoMasterStore = new Ext.data.JsonStore({
+            autoLoad: true,
+            baseParams: {
+                protoFilter: '{"pk" : 0,}',
+                protoApp: protoAppCode,
+                protoConcept: protoConcept,
+                modelLoad: '1',
+            },
+            remoteSort: true,
+            proxy: protoProxy,
+            reader: protoReader
+        });
+    } else {
+        
+        protoMasterStore.load();
+    }
 
     // De aqui disparo los eventos de la grilla master 
     var masterGrid = GridConfigFactory(protoAppCode, protoConcept, protoMasterStore);
@@ -55,6 +60,7 @@ function newDjangoGrid(protoAppCode, protoConcept) {
         text: '<b>Promote Detail<b>',
         id: menuPromDetail,
         disabled: true,
+        handler: onMenuPromoteDetail, 
     });
     menu.addSeparator();
 
@@ -191,7 +197,7 @@ function newDjangoGrid(protoAppCode, protoConcept) {
     // ===================================================================================
 
 
-    // En este evento tengo la metadata  ----------------------------------------------------------------------- 
+    // En este evento tengo la metadata, para conf el entorno  ---------------------------- 
     protoMasterStore.on('metachange', function (store, meta) {
 
         // para evitar el seteo en cada carga  	   
@@ -288,6 +294,7 @@ function newDjangoGrid(protoAppCode, protoConcept) {
 
 
     // functions to load data  -------------------------------------------------------------------------------
+    // TODO: Guardar criterios en el menu para q puedan ser (des)activados,  Querys complejos con combinacion de campos AND
     function onClickLoadData(btn) {
 
         var sFilter = '';
@@ -319,11 +326,23 @@ function newDjangoGrid(protoAppCode, protoConcept) {
     };
 
 
-    // Carga los datos de la grilla con el criterio seleccionado 
-    // TODO: Guardar criterios en el menu para q puedan ser (des)activados,  Querys complejos con combinacion de campos AND
-    function onMenuSelectDetail(item) {
+    //  Menu de control de detalles   ---------------------------------------------------------------------------------  
+    function onMenuPromoteDetail(item) {
 
         // console.log( 'Menu', item ) ;
+        // Verifica q halla un tab activo 
+        if (ixActiveTab < 0) { return; }
+
+        // carga el store 
+        var tmpStore = cllStoreDet[ixActiveTab]
+
+        newDjangoGrid( protoAppCode, tmpStore.baseParams.protoConcept , tmpStore )
+        
+    };
+
+    // Creacion de tabs 
+    function onMenuSelectDetail(item) {
+
         var protoDetail = item.text;
 
         var tab = protoTabs.items.find(function (i) {
