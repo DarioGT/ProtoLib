@@ -202,6 +202,11 @@ function newDjangoGrid(protoAppCode, protoConcept, protoMasterStore ) {
 
         // para evitar el seteo en cada carga  	   
         if (bMasterMetaLoaded) {
+
+	        // Refresh the detail 
+	        idMasterGrid = 0
+	        linkDetail(ixActiveTab);
+
             return;
         }
         bMasterMetaLoaded = true;
@@ -253,8 +258,9 @@ function newDjangoGrid(protoAppCode, protoConcept, protoMasterStore ) {
                 // colStore.add(new colStore.recordType({ colPhysique: c.name, colName: c.header }));
             }
         };
+        
         colStore.loadData(newColData);
-
+        
 
     });
 
