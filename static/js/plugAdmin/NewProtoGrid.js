@@ -329,6 +329,8 @@ function newDjangoGrid(protoAppCode, protoConcept, protoMasterStore ) {
         comboOp.setValue(''); 
         searchCr.setValue(''); 
         
+        // Automatic refresh 
+        onClickLoadData( {} );
     };
 
 

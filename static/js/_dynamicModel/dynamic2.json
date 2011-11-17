@@ -1,0 +1,106 @@
+{
+    "metaData": {
+        "idProperty": "id",
+        "totalProperty": "total",
+        "successProperty": "success",
+        "root": "data",
+        "fields": [{
+            "name": "ID",
+            "type": "int",
+            "allowBlank": false,
+            "defaultValue": "0"
+        }, {
+            "name": "USER",
+            "type": "string",
+            "allowBlank": false,
+            "defaultValue": ""
+        }, {
+            "name": "HOST",
+            "type": "string",
+            "allowBlank": false,
+            "defaultValue": ""
+        }, {
+            "name": "DB",
+            "type": "string",
+            "allowBlank": true,
+            "defaultValue": null
+        }, {
+            "name": "COMMAND",
+            "type": "string",
+            "allowBlank": false,
+            "defaultValue": ""
+        }, {
+            "name": "TIME",
+            "type": "int",
+            "allowBlank": false,
+            "defaultValue": "0"
+        }, {
+            "name": "STATE",
+            "type": "string",
+            "allowBlank": true,
+            "defaultValue": null
+        }, {
+            "name": "INFO",
+            "type": "string",
+            "allowBlank": true,
+            "defaultValue": null
+        }]
+    },
+    "success": true,
+    "total": 1,
+    "message": "Loaded data",
+    "data": [{
+        "ID": "12177",
+        "USER": "BCD",
+        "HOST": "::1:10649",
+        "DB": "information_schema",
+        "COMMAND": "Query",
+        "TIME": "0",
+        "STATE": "executing",
+        "INFO": "SELECT * FROM `PROCESSLIST` LIMIT 0,50"
+    }],
+    "columns": [{
+        "header": "ID",
+        "dataIndex": "ID",
+        "sortable": true
+    }, {
+        "header": "USER",
+        "dataIndex": "USER",
+        "sortable": true
+    }, {
+        "header": "HOST",
+        "dataIndex": "HOST",
+        "sortable": true, 
+        "field":  {
+                "xtype": "textfield"
+            }
+    }, {
+        "header": "DB",
+        "dataIndex": "DB",
+        "sortable": true,
+        "field":  {
+                "xtype": "textfield"
+            }
+
+    }, {
+        "header": "COMMAND",
+        "dataIndex": "COMMAND",
+        "sortable": true
+    }, {
+        "header": "TIME",
+        "dataIndex": "TIME",
+        "sortable": true
+    }, {
+        "header": "STATE",
+        "dataIndex": "STATE",
+        "sortable": true
+    }, {
+        "header": "INFO",
+        "dataIndex": "INFO",
+        "sortable": true,
+        "field":  {
+                "xtype": "textfield"
+            }
+
+    }]
+}
