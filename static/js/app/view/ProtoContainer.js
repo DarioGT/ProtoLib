@@ -19,10 +19,21 @@ Ext.define('ProtoUL.view.ProtoContainer', {
         title: rec.data.text ,
         closable: true, 
         layout: 'fit',
-        xtype: 'protoMasterDetail',
+        // xtype: 'protoMasterDetail',
+        items: [
+            this.createProtoMasterDetail( rec.data.id ),
+            ], 
         });
 
     },
+
+    createProtoMasterDetail: function( protoConceptId ){
+        this.MDPanel = Ext.create('widget.protoMasterDetail', {
+            protoConcept : protoConceptId,
+        });
+        return this.MDPanel;
+    },
+    
 
 });
 

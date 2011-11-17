@@ -239,6 +239,4 @@ XXXXXXXXXXXXXXXX
 
     }
 
-    newWin2.show();
-
 }
