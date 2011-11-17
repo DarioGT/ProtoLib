@@ -5,7 +5,7 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
     initComponent: function() {
         
         // De aqui disparo los eventos de la grilla master 
-        // var masterGrid = GridConfigFactory(protoAppCode, protoConcept, protoMasterStore);
+        // var masterGrid = GridConfigFactory( protoConcept, protoMasterStore);
 
         // coleccion con los store de los detalles  y su indice  
         var cllStoreDet = [];
