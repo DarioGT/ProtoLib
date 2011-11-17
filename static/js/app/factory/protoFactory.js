@@ -1,41 +1,8 @@
-Ext.Loader.setConfig({
-    enabled: true
-});
-
-// Ext.Loader.setPath('Ext.ux', 'http://dev.sencha.com/deploy/ext-4.0.1/examples/ux');
-
 Ext.require([
     'Ext.form.*',
     'Ext.data.*',
     'Ext.grid.*',
-    // 'Ext.ux.grid.FiltersFeature',
-    // 'Ext.layout.container.Column'
     ]);
-
-
-
-// This data can be pulled off a back-end database
-// Used to generate a model and a data grid
-var records = [{
-    data:{
-        "dataIndex":"first",
-        "name":"First Name",
-        "type":"string"
-    }
-},{
-    data:{
-        "dataIndex":"last",
-        "name":"Last Name",
-        "type":"String"
-    }
-},{
-    data:{
-        "dataIndex":"email",
-        "name":"Email",
-        "type":"string"
-    }
-}];
-
 
 
 // Lookup table (type => xtype)
@@ -53,13 +20,6 @@ var store_template = {
     autoSync: true,
     remoteFilter: false,
     
-    // DATA is inserted here for the example to work on local drive (use proxy below)
-    // data:[{id:1,first:"Fred",last:"Flintstone",email:"fred@flintstone.com"},
-          // {id:2,first:"Wilma",last:"Flintstone",email:"wilma@flintstone.com"},
-          // {id:3,first:"Pebbles",last:"Flintstone",email:"pebbles@flintstone.com"},
-          // {id:4,first:"Barney",last:"Rubble",email:"barney@rubble.com"},
-          // {id:5,first:"Betty",last:"Rubble",email:"betty@rubble.com"},
-          // {id:6,first:"BamBam",last:"Rubble",email:"bambam@rubble.com"}],
 
     proxy: {
         type: 'rest',
@@ -143,7 +103,7 @@ function windowFactory(winName,winTemp,items){
 }
 
 // Generate a model, a store a grid and a window dynamically from a record list!
-function generateDynamicModel(records){
+function generateDynamicModel(pciDefinition){
     
     fields = [{
         name: 'id',
@@ -159,19 +119,19 @@ function generateDynamicModel(records){
         hidden: true, 
     }];
 
-    for (var i = 0; i < records.length; i++) {
+    for (var i = 0; i < pciDefinition.length; i++) {
 
         fields[i+1] =  {
-            name: records[i].data.dataIndex,
-            type: records[i].data.type
+            name: pciDefinition[i].data.dataIndex,
+            type: pciDefinition[i].data.type
         };
 
         columns[i+1] = {
-            text: records[i].data.name,
+            text: pciDefinition[i].data.name,
             sortable: true,
-            dataIndex: records[i].data.dataIndex,
+            dataIndex: pciDefinition[i].data.dataIndex,
             editor:  {
-                xtype: type_lookup[records[i].data.type]
+                xtype: type_lookup[pciDefinition[i].data.type]
             }
         };
     }
@@ -214,5 +174,5 @@ function generateDynamicModel(records){
 
 Ext.onReady(function(){
     rowEditing = Ext.create('Ext.grid.plugin.RowEditing');
-    generateDynamicModel(records);
+    generateDynamicModel(pciDefinition);
 });
