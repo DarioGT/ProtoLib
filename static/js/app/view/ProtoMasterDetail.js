@@ -1,11 +1,24 @@
+/*
+ *  TabContainer 
+ *  -   MasterDetail
+ *  -   -   Grid 
+ */
 Ext.define('ProtoUL.view.ProtoMasterDetail', {
     extend: 'Ext.container.Container',
     alias: 'widget.protoMasterDetail',
+    requires: [
+        'ProtoUL.view.ProtoGrid',
+        'ProtoUL.UI.TbMasterDetail',
+    ],
 
     initComponent: function() {
+
+        console.log ( 'masterDetali', this.protoConcept ); 
         
-        // De aqui disparo los eventos de la grilla master 
-        // var masterGrid = GridConfigFactory( protoConcept, protoMasterStore);
+        // Definicion grilla master   ---------------- 
+        masterGrid = Ext.create('ProtoUL.view.ProtoGrid', {
+            protoConcept : this.protoConcept,   
+        }) ; 
 
         // coleccion con los store de los detalles  y su indice  
         var cllStoreDet = [];
@@ -20,87 +33,9 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
         var bMasterMetaLoaded = false;
     
         // Necesaria para poder agregar cosas dinamicamente   ------------------------------------------------------
-        var menu = new Ext.menu.Menu();
-        var tb = new Ext.Toolbar();
-        tb.add({
-            text: 'Details',
-            // iconCls: 'bmenu',  // <-- icon
-            menu: menu // assign menu by instance
-        }, '->');
-    
-        // items can easily be looked up
-        var menuPromDetail = Ext.id();
-        menu.add({
-            text: '<b>Promote Detail<b>',
-            id: menuPromDetail,
-            disabled: true,
-            // handler: onMenuPromoteDetail, 
-        },{
-            xtype: 'menuseparator'
-        });
-    
-    
-        // add a combobox to the toolbar
-        var colStore = new Ext.data.ArrayStore({
-            fields: ['colPhysique', 'colName'],
-            data: [],
-        });
-    
-        var comboCols = new Ext.form.ComboBox({
-            store: colStore,
-            width: 135,
-            mode: 'local',
-            triggerAction: 'all',
-            displayField: 'colName',
-            valueField: 'colPhysique',
-            forceSelection: true,
-            emptyText: 'Select a column ...',
-            selectOnFocus: true,
-            typeAhead: true,
-        });
-        tb.add(comboCols);
-    
-        // combo - operation 
-        var comboOp = new Ext.form.ComboBox({
-            store: new Ext.data.ArrayStore({ fields: ['code', 'operation'], data: _ComboFilterOp }),
-            width: 50,
-            mode: 'local',
-            triggerAction: 'all',  
-            displayField: 'operation',
-            valueField: 'code',
-            forceSelection: true,
-            editable: false,
-        });
-        tb.add(comboOp);
-    
-    
-        // Criteria 
-        var searchCr = new Ext.form.TextField({
-            emptyText: 'search criteria ..',
-            width: 135
-        })
-        tb.add(searchCr);
-    
-    
-        // Load Data button 
-        var searchBtn = new Ext.button.Split({
-            text: 'Load data',
-            // handler: onClickLoadData,
-            // iconCls: 'blist',
-            menu: {
-                items: [{
-                    text: '<b>Clear filter<b>',
-                    // handler: onClickFilter
-                // }, {
-                    // text: 'add filter',
-                    // handler: onClickFilter
-                }]
-            }
-        })
-    
-        tb.add(searchBtn);
+        var tb = Ext.create('ProtoUL.UI.TbMasterDetail');
         tb.doLayout();
-    
+        
         // Panel de detalles ==================================================================================
         var detailEI = Ext.id();
         var protoTabs = new Ext.TabPanel({

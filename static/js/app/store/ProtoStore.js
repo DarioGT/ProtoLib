@@ -1,8 +1,17 @@
-Ext.define('ProtoUL.store.Contacts', {
+/*
+ *  grid
+ * - model ( reader )
+ * - - store  ( proxy )   
+ * 
+ * @Dario Gomez 11.11 
+ * Requiere : 
+ *              protoConcept
+ */
+
+Ext.define('ProtoUL.store.ProtoStore', {
     extend: 'Ext.data.Store',
-    model: 'ProtoUL.model.Contact',
     autoLoad: true,
-    pageSize: 35,
+    pageSize: 100,
     autoLoad: {start: 0, limit: 100},
     
     proxy: {
@@ -13,16 +22,11 @@ Ext.define('ProtoUL.store.Contacts', {
             update: 'protoExt/update.action/',
             destroy: 'protoExt/delete.action/'
         },
-        reader: {
-            type: 'json',
-            root: 'data',
-            successProperty: 'success'
-        },
         writer: {
             type: 'json',
-            writeAllFields: true,
+            // writeAllFields: true,
             encode: false,
-            root: 'data'
+            root: 'data',
         },
         listeners: {
             exception: function(proxy, response, operation){
@@ -34,5 +38,17 @@ Ext.define('ProtoUL.store.Contacts', {
                 });
             }
         }
-    }
+    }, 
+
+    // model: 'ProtoUL.model.Contact',
+    initComponent: function() {
+
+        console.log ( 'store', this.protoConcept ); 
+      
+        this.model =  Ext.create('Ext.model.ProtoModel', {
+                protoConcept : this.protoConcept,         
+              }); 
+        this.callParent();
+    },
+    
 });

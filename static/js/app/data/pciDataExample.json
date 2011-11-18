@@ -1,8 +1,31 @@
-[
-    {id:1,first:"Fred",last:"Flintstone",email:"fred@flintstone.com"},
-    {id:2,first:"Wilma",last:"Flintstone",email:"wilma@flintstone.com"},
-    {id:3,first:"Pebbles",last:"Flintstone",email:"pebbles@flintstone.com"},
-    {id:4,first:"Barney",last:"Rubble",email:"barney@rubble.com"},
-    {id:5,first:"Betty",last:"Rubble",email:"betty@rubble.com"},
-    {id:6,first:"BamBam",last:"Rubble",email:"bambam@rubble.com"}
-]
+{
+    "succes": true,
+    "meta": {
+        "totalCount": 2,
+        "sortInfo": {
+            "field": "id",
+            "direction": "ASC"
+        },
+        "filter": [{
+            "dataIndex": "id",
+            "filterOp": ">",
+            "value": "0",
+            },{
+            "dataIndex": "id",
+            "filterOp": "<",
+            "value": "100",
+            }], 
+        "initial": 0,
+        "limit": 100,
+    },
+    "rows": [{
+        "code": "metaDb",
+        "id": "86",
+        "description": ""
+    }, {
+        "code": "Prueba",
+        "id": "192",
+        "description": ""
+    }],
+
+}

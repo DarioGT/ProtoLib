@@ -1,25 +1,53 @@
-[{
-    data:{
-        "dataIndex":"id",
-        "name":"id",
-        "type":"string"
+{
+    "succes": true,
+    "metaData": {
+        "conceptName": "Contact",
+        "shortTitle": "Contact",
+        "description": "Contact",
+        
+        "sortInfo": {
+            "field": "id",
+            "direction": "ASC"
+        },
+        "idProperty": "id",
+        "fields": [{
+            "dataIndex": "id",
+            "header": "id",
+            "hidden": true,
+            "width": 160,
+            "type": "string",
+            "allowBlank": false,
+            "allowFilter": false,
+            "sortable": false,
+            "editPolicy": 0,
+            "defaultValue": "",
+            "baseConcept": "",
+        }, {
+            "header": "code",
+            "allowFilter": false,
+            "sortable": false,
+            "dataIndex": "code"
+        }, {
+            "header": "description",
+            "sortable": false,
+            "dataIndex": "description",
+            "width": 160
+        }],
+        "protoDetails": [{
+            "conceptDetail": "Model", 
+            "masterFilter": "id",
+            "detailFilter": "domain__id"
+            },{
+            "conceptDetail": "UDP", 
+            "masterFilter": "id",
+            "detailFilter": "domain__id"
+            }]
+        "protoViews":[{
+            "viewTitle": "Esentials", 
+            "visibleProp": ["code","description"]
+            },{
+            "viewTitle": "All", 
+            "visibleProp": ["id" "code","description"]
+            }] 
     }
-},{
-    data:{
-        "dataIndex":"first",
-        "name":"First Name",
-        "type":"string"
-    }
-},{
-    data:{
-        "dataIndex":"last",
-        "name":"Last Name",
-        "type":"String"
-    }
-},{
-    data:{
-        "dataIndex":"email",
-        "name":"Email",
-        "type":"string"
-    }
-}]
+}

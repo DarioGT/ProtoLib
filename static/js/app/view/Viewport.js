@@ -18,7 +18,7 @@ Ext.define('ProtoUL.view.Viewport', {
             },
             items: [
                 this.createMenuPanel(),
-                this.createProtoPanel(),
+                this.createProtoContainer(),
                 // this.createPropertyPanel(),
                 // this.createHeaderPanel(),
                 // this.createFooterPanel(),
@@ -64,11 +64,11 @@ Ext.define('ProtoUL.view.Viewport', {
 
     loadPci: function(rec){
         // console.log( 'MenuClick')
-        this.protoPanel.addTabPanel(rec);
+        this.protoContainer.addTabPanel(rec);
     },   
 
-    createProtoPanel: function(){
-       this.protoPanel = Ext.create('widget.protoContainer', {
+    createProtoContainer: function(){
+       this.protoContainer = Ext.create('widget.protoContainer', {
             // title: 'Master',
             // tbar: tb,
             region: 'center',
@@ -96,7 +96,7 @@ Ext.define('ProtoUL.view.Viewport', {
             // }]
 
         }); 
-        return this.protoPanel;
+        return this.protoContainer;
     },
 
     // createHeaderPanel: function(){
