@@ -100,7 +100,8 @@ def DateFormatConverter(to_extjs = None, to_python = None):
 
 
 def JsonResponse(contents, status=200):
-    return HttpResponse(contents, mimetype='text/javascript', status=status)
+    # http://tools.ietf.org/html/rfc4627  ( text/javascript  obsoleto ) 
+    return HttpResponse(contents, mimetype='application/json', status=status)
 
 def JsonSuccess(params = {}):
     d = {"success":True}

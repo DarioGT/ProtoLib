@@ -1,5 +1,15 @@
 Tareas pendientes
 
+    **  Cargar la definicion de la grilla directamente de la dB
+    Separar el llamado de definicion 
+    HAce una tabla Buffer para este manejo 
+
+    ** Separa el llamado Ajax como un singleton, 
+    Esto hara q solo se llame una vez
+    Agregar validacion 
+    Tomar como referencia  feed-viewer/app/lib/FeedValidator.js   ( mvc )
+
+
 	** Seleccion de Columnas visibles ( vista )
 	PAra el manejode las columnas no se usaran tabs, pues este objeto es automaticamente un contenedor y el objeto contenido 
 	hace referencia a su contenedor, de tal forma q al intentar compartirlo en diferentes tabs, solo aparece en el ultimo q 
@@ -7,41 +17,49 @@ Tareas pendientes
 	
 	
 	** Busqueda  QBE
-	Ext.ux.form.SearchField  Es un widget especializado en esto,  y con un campo de base adicional se podria manejar 
-	busquedas sobre campos especificos o sobre todos los campos buscables
-	 
-	http://joekuan.wordpress.com/2011/04/04/selective-column-search-using-extjs-combo-and-searchfield-together/
-	file:///D:/data/ExtJs/ext-3.4.0/examples/form/custom-access.html
-	file:///D:/data/ExtJs/ext-3.4.0/examples/forum/forum.html
+    Agregar busqueda textual sobre campos predefinidos 
+
 
 	** Filtros 
 	Los filtros sobre las columnas tambien son una buena opcion 
 	file:///D:/data/ExtJs/ext-3.4.0/examples/grid-filtering/grid-filter-local.html
 
 
-** 	Nagegador 
-	Agregar vinculos de navegacion a la grilla
-	Manejo de navegacion con dependencia padre hijo 
-
-	El manejo de tabs quedara para mas adelante, por ahora el manejo de master-detail se hace sobre un solo 
-	detalle,  en el menu se agregan todas los "detalles"  y se configura el detalle seleccionado. 
-	
-
-**	Otras 
+    **	Otras 
 	Pasar la vista a ProtoLib
 	Q la vista genere los datos de manejo tomados de la definicion Db
 	Manejar los modelos tambien dinamicamente Db
 	Independizar las DB 	
-	Convertir la grilla de lectura basica en una grilla extjs
 	 	
 	 	
-Ok 	Cambiar el InLine por una tabla simple con una columa de modificacion y otra de seleccion (hipervinculo sobre la llave), 
-	la edicion no se hara inline, se hara todo el tiempo em la forma base del modelo,
-
-
-
 
 ------------------------------------------------------------------------
+
+11/11/19
+
+NO  Ext.ux.form.SearchField
+    Es un widget especializado en esto,  y con un campo de base adicional se podria manejar 
+    busquedas sobre campos especificos o sobre todos los campos buscables
+     
+    http://joekuan.wordpress.com/2011/04/04/selective-column-search-using-extjs-combo-and-searchfield-together/
+    file:///D:/data/ExtJs/ext-3.4.0/examples/form/custom-access.html
+    file:///D:/data/ExtJs/ext-3.4.0/examples/forum/forum.html
+
+    Finalmente las busquedas se manejara construyendo los QBE en Python con el ORM 
+
+
+
+Ok  Nagegador  Master Detail 
+    Agregar vinculos de navegacion a la grilla
+    Manejo de navegacion con dependencia padre hijo 
+
+
+NO  Cambiar el InLine por una tabla simple con una columa de modificacion y otra de seleccion (hipervinculo sobre la llave), 
+    la edicion no se hara inline, se hara todo el tiempo em la forma base del modelo,
+
+    Finalmente, se decide transladar todo a ExtJs
+
+
 
 9/26/2011 10:18:00 PM
 	

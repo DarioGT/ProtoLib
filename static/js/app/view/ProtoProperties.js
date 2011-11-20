@@ -1,4 +1,5 @@
 
+
 Ext.define('ProtoUL.view.Properties', {
 
     extend: 'Ext.grid.property.Grid',
@@ -19,3 +20,16 @@ Ext.define('ProtoUL.view.Properties', {
         "borderWidth": 1
     }
 });
+
+
+    // createPropertyPanel: function(){
+        // this.propertyPanel = Ext.create('widget.propertypanel', {
+            // region: 'east',
+            // width: 300,
+            // title: 'Properties',
+            // collapsed: true,
+            // xtype : 'properties',
+        // });
+        // return this.propertyPanel;
+    // },
+

@@ -3,7 +3,7 @@ Ext.define('ProtoUL.view.Viewport', {
 
     requires: [
         'ProtoUL.view.MenuTree',
-        'ProtoUL.view.Properties',
+        // 'ProtoUL.view.ProtoProperties',
         'ProtoUL.view.ProtoContainer',
     ],
 
@@ -62,9 +62,64 @@ Ext.define('ProtoUL.view.Viewport', {
         return this.menuPanel;
     },
 
+    DefineProtoModel: function( metaData , pConcept, modelClassName ){
+            
+        console.log ( pConcept, ' Loading ' + modelClassName + '...' ); 
+        Ext.define(modelClassName, {
+            extend: 'ProtoUL.model.ProtoModel',
+            metaData : metaData,
+            fields: metaData.fields, 
+            proxy: {
+                type: 'ajax',
+                url: 'dynamic2.json'
+            }, 
+        });
+  
+    },
+
+
     loadPci: function(rec){
-        // console.log( 'MenuClick')
-        this.protoContainer.addTabPanel(rec);
+        
+        
+        // *** El truco es q no se crea el modelo, solo se define
+        var protoConcept = rec.data.id ;  
+        var thisRef = this ;
+        
+        console.log( protoConcept, ' Loading MasterPanel ...')
+
+        var modelClassName = _PConfig.clsBaseModel + protoConcept ; 
+        
+        if  (! Ext.ClassManager.isCreated( modelClassName )){
+            console.log ( protoConcept, ' Loading  Pci ...  ' ); 
+
+            Ext.Ajax.request({
+                url: _PConfig.urlProtoDefinition  ,
+                params : { 
+                    action : protoConcept 
+                    },
+                method: 'GET',
+                success: function ( result, request ) { 
+                    
+                    console.log( protoConcept, ' Pci loaded ');
+                    var myResult = Ext.decode( result.responseText )
+                       
+                    thisRef.DefineProtoModel( myResult.metaData , protoConcept, modelClassName  );
+                    thisRef.protoContainer.addTabPanel(rec);
+
+                },
+                failure: function ( result, request) { 
+                    // Se aborta la ejecucion 
+                    console.log('Failed', result.responseText); 
+                },
+            });
+
+        }  else {
+
+            // El modelo ya ha sido cargado         
+            this.protoContainer.addTabPanel(rec);
+               
+        };
+        
     },   
 
     createProtoContainer: function(){
@@ -99,38 +154,5 @@ Ext.define('ProtoUL.view.Viewport', {
         return this.protoContainer;
     },
 
-    // createHeaderPanel: function(){
-        // this.headerPanel = Ext.create('widget.headerpanel', {
-            // xtype: 'box',
-            // region:'north',
-            // html: '<span class="title">Proto Certae </span><span class="subtitle">Version 0.0</span>',
-            // height: 40,
-            // collapsible: false,
-            // split: false,
-        // });
-        // return this.headerPanel;
-    // },
-
-    // createPropertyPanel: function(){
-        // this.propertyPanel = Ext.create('widget.propertypanel', {
-            // region: 'east',
-            // width: 300,
-            // title: 'Properties',
-            // collapsed: true,
-            // xtype : 'properties',
-        // });
-        // return this.propertyPanel;
-    // },
-
-
-    // createFooterPanel: function(){
-        // this.footerPanel = Ext.create('widget.footerpanel', {
-            // region: 'south',
-            // collapsible: false,
-            // split: false,
-            // height: 20,
-        // });
-        // return this.footerPanel;
-    // },
 
 });

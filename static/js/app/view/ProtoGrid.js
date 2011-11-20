@@ -1,5 +1,7 @@
 /*
- * 
+ *  grid
+ * -  store  ( proxy )   
+ * -  - model ( reader )  *** 
  */
 Ext.define('ProtoUL.view.ProtoGrid' ,{
     extend: 'Ext.grid.Panel',
@@ -7,33 +9,63 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
 
     requires: [
         'ProtoUL.store.ProtoStore',
+        'ProtoUL.model.ProtoModel',
     ],
     
     //requires: ['Ext.toolbar.Paging'],
-    iconCls: 'icon-grid',
-    title : 'Contacts',
+    // iconCls: 'icon-grid',
 
 	initComponent: function() {
 
-        console.log ( 'grid', this.protoConcept ); 
 
-        this.store = Ext.create('ProtoUL.store.ProtoStore', {
-            protoConcept : this.protoConcept,   
-        }) ; 
+        console.log ( this.protoConcept + '  grid init'  ); 
+        var modelClassName = _PConfig.clsBaseModel + this.protoConcept ; 
+        if  (! Ext.ClassManager.isCreated( modelClassName )){
+            console.log ( this.protoConcept, ' ERROR Pci  not loaded ' ); 
+        } ;
         
-        this.columns = [{
-            "dataIndex": "id",
-            "header": "id",
-            "width": 160,
-            }, {
-                "header": "code",
-                "dataIndex": "code"
-            }, {
-                "header": "description",
-                "dataIndex": "description",
-            }];   
+        console.log (  this.protoConcept, ' Loading store ...  '  ); 
+    
+        // this.store = Ext.create('ProtoUL.store.ProtoStore', {
+            // model : this.model, 
+            // protoConcept : this.protoConcept,   
+            // }) ; 
+    
+        var myStore = Ext.create('Ext.data.Store', {
+            model: modelClassName
+        });
+
+
+        for (var i = 0; i < records.length; i++) {
+    
+            fields[i+1] =  {
+                name: records[i].data.dataIndex,
+                type: records[i].data.type
+            };
+    
+            columns[i+1] = {
+                text: records[i].data.name,
+                sortable: true,
+                dataIndex: records[i].data.dataIndex,
+                editor:  {
+                    xtype: type_lookup[records[i].data.type]
+                }
+            };
+        }
         
-		// this.dockedItems = [{
+        this.columns = myColumns;  
+        this.store = myStore; 
+        
+        this.callParent(arguments);
+
+
+	},
+	
+});
+
+
+        // this.dockedItems = [
+        // {
             // xtype: 'toolbar',
             // items: [{
                 // iconCls: 'icon-save',
@@ -55,6 +87,3 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
             // emptyMsg: "No contacts to display"
         // }];
 
-		this.callParent(arguments);
-	}
-});

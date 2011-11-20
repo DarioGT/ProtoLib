@@ -13,7 +13,7 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
 
     initComponent: function() {
 
-        console.log ( 'masterDetali', this.protoConcept ); 
+        console.log ( this.protoConcept , ' masterPanel def'  ); 
         
         // Definicion grilla master   ---------------- 
         masterGrid = Ext.create('ProtoUL.view.ProtoGrid', {
@@ -55,7 +55,7 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
                 region: 'center',
                 layout: 'fit',
                 collapsible: false,
-                // items: masterGrid
+                items: masterGrid
             }, {
                 title: 'Details',
                 region: 'south',

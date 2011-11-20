@@ -1,7 +1,7 @@
 /*
  *  grid
- * - model ( reader )
- * - - store  ( proxy )   
+ * -  store  ( proxy )   
+ * -  -	model ( reader )  *** 
  * 
  * @Dario Gomez 11.11 
  * Requiere : 
@@ -9,57 +9,60 @@
  */
 Ext.define('ProtoUL.model.ProtoModel', {
     extend: 'Ext.data.Model',
-    alias: 'model.menuModel',
+    alias: 'model.protoModel',
+
+    proxy: {
+        type: 'ajax',
+        api: {
+            read : 'protoExt/view.action',
+            create : 'protoExt/create.action/',
+            update: 'protoExt/update.action/',
+            destroy: 'protoExt/delete.action/'
+        },
+        writer: {
+            type: 'json',
+            // writeAllFields: true,
+            encode: false,
+            root: 'data',
+        },
+        listeners: {
+            exception: function(proxy, response, operation){
+                Ext.MessageBox.show({
+                    title: 'REMOTE EXCEPTION',
+                    msg: operation.getError(),
+                    icon: Ext.MessageBox.ERROR,
+                    buttons: Ext.Msg.OK
+                });
+            }
+        }
+    }, 
+
 
     initComponent: function() {
 
-        console.log ( 'model', this.protoConcept ); 
 
-        // Ext.Ajax.request({
-            // url : 'protoExt/protoGetConceptModel' , 
-            // params : { 
-                // action : this.protoConcept 
-                // },
-            // method: 'GET',
-            // success: function ( result, request ) { 
-                // // this.protoDefinition = result ;
-                // Ext.MessageBox.alert('Success', 'Data return from the server: '+ result.responseText); 
-            // },
-            // failure: function ( result, request) { 
-                // // this.protoDefinition = result ;
-                // Ext.MessageBox.alert('Failed', result.responseText); 
-            // },
-            // callback: function(){
-                // console.log('model Ok');
-           // }, 
-        // });
+        // console.log ( 'model', this.protoConcept ); 
+
 
         // Si no hay q meterlo al callback o al success 
-        console.log('fields ready??..');
-        // fields: result.fields  
 
-        this.fields = [
-            {name: 'id', type: 'string'},
-            {name: 'text', type: 'string'},
-            {name: 'leaf', type: 'boolean'},
-        ];
-
-        this.reader= {
-            type: 'json',
-            root: 'data',
-            successProperty: 'success',
-            // id: result.meta.id ,
-            id: 'id',
-        };
-
-        this.callParent();
-
-//      Definidos a nivel de STORE -------------------------------------
-        // proxy =  {
+        // this.reader= {
+            // type: 'json',
+            // root: 'data',
+            // successProperty: 'success',
+            // // id: result.meta.id ,
+            // id: 'id',
+        // };
+// 
+// //      Definidos a nivel de STORE -------------------------------------
+        // this.proxy =  {
             // type: 'ajax',
             // url: 'protoExt/protoGetConceptData',
             // method: 'POST'
         // }; 
+
+        this.callParent(arguments);
+
 
     },
     

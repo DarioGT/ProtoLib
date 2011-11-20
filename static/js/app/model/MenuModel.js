@@ -8,7 +8,7 @@ Ext.define('ProtoUL.model.MenuModel', {
     alias: 'model.menuModel',
     proxy: {
         type: 'ajax',
-        url: 'protoExt/protoGetMenuData'
+        url: _PConfig.urlMenu , 
     }, 
 
     fields: [

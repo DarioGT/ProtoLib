@@ -3,6 +3,18 @@
  *  
  */
 
+
+_PConfig =  {
+   urlMenu : 'protoExt/protoGetMenuData', 
+   urlProtoDefinition : 'protoExt/protoGetConceptModel' , 
+   
+   clsBaseModel: 'ProtoUL.model.ProtoModel.', 
+}; 
+
+
+
+
+
 // ProtoUL.view.ProtoMasterDetail 
 _ComboFilterOp = [
             ['iexact', '='],
@@ -27,5 +39,5 @@ _ComboFilterOp = [
 
             ['isnull', 'null'],
             // ['iregex', 'regex'],
-    ]
+    ]; 
  
