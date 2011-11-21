@@ -70,21 +70,14 @@ Ext.define('FeedViewer.FeedGrid', {
                 }
             },
             columns: [{
+                header : 'Title', 
                 text: 'Title',
                 dataIndex: 'title',
                 flex: 1,
-                renderer: this.formatTitle
-            }, {
-                text: 'Author',
-                dataIndex: 'author',
                 hidden: true,
-                width: 200
-
-            }, {
-                text: 'Date',
-                dataIndex: 'pubDate',
+                width: 200,
+                renderer: this.formatTitle,
                 renderer: this.formatDate,
-                width: 200
             }]
         });
         this.callParent(arguments);

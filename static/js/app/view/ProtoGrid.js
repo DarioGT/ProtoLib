@@ -36,21 +36,30 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
         });
 
 
-        for (var i = 0; i < records.length; i++) {
-    
-            fields[i+1] =  {
-                name: records[i].data.dataIndex,
-                type: records[i].data.type
+        // DGT**  REcuperar la clase para obtener la meta 
+        var myMeta = _cllPCI[ this.protoConcept ] ;                         
+        var myColumns = [];
+
+         // * adding RowNumberer  
+        myColumns.push(Ext.create('Ext.grid.RowNumberer'));
+
+
+        // DGT** Creacion de columnas  
+        for (var ix in myMeta.fields ) {
+            var vFld  =  myMeta.fields[ix]; 
+            var col = {
+                text: vFld.header,
+                sortable: vFld.sortable,
+                dataIndex: vFld.dataIndex,
+                flex: vFld.flex,
+                hidden: vFld.hidden,
+                width: vFld.width ,
+                editor:  { xtype: _gridTypeEditor[vFld.type] }, 
+                // renderer: this.formatDate,                
             };
-    
-            columns[i+1] = {
-                text: records[i].data.name,
-                sortable: true,
-                dataIndex: records[i].data.dataIndex,
-                editor:  {
-                    xtype: type_lookup[records[i].data.type]
-                }
-            };
+
+            myColumns.push(col);
+            
         }
         
         this.columns = myColumns;  

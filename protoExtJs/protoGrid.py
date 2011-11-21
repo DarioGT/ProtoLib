@@ -1,4 +1,4 @@
-
+import sys 
 import utils
 from django.db import models
 
@@ -189,6 +189,7 @@ class ProtoGridFactory(object):
                         fields.append(config_field)
         return fields
                         
+                        
     def get_rows(self, fields, queryset, start, limit):
         """ 
             return the row list from given queryset 
@@ -236,40 +237,44 @@ class ProtoGridFactory(object):
             includes the rows data
             to be used in combination with ProtoAutoGrid 
         """
-        if not totalcount: 
-            totalcount = queryset.count()
-
-        base_fields = self.get_fields(colModel)
-        protoDetails = self.get_details()
-        
-        # todo : stupid ?
-        id_field = base_fields[0]['name']
+        try:
+            if not totalcount: 
+                totalcount = queryset.count()
+    
+            base_fields = self.get_fields(colModel)
+            protoDetails = self.get_details()
             
-        jsondict = {
-             'succes':True
-            ,'metaData':{
-                 'root':'rows'
-                ,'totalProperty':'totalCount'
-                ,'successProperty':'success'
-                ,'idProperty':id_field
-                ,'sortInfo':{
-                   "field": sort_field
-                   ,"direction": sort_direction
+            # todo : stupid ?
+            id_field = base_fields[0]['name']
+                
+            jsondict = {
+                 'succes':True
+                ,'metaData':{
+                     'root':'rows'
+                    ,'totalProperty':'totalCount'
+                    ,'successProperty':'success'
+                    ,'idProperty':id_field
+                    ,'sortInfo':{
+                       "field": sort_field
+                       ,"direction": sort_direction
+                    }
+                    ,'fields':base_fields
+    
+    #                ,'protoTabs':[
+    #                     {'T1': ['Col1','Col2']}, 
+    #                     {'T2': ['Col3','Col2']},
+    #                     ]    
+                    ,'protoDetails': protoDetails
                 }
-                ,'fields':base_fields
-
-#                ,'protoTabs':[
-#                     {'T1': ['Col1','Col2']}, 
-#                     {'T2': ['Col3','Col2']},
-#                     ]    
-                ,'protoDetails': protoDetails
+#                ,'rows':self.get_rows(base_fields, queryset, start, limit)
+                ,'rows':[]
+                ,'totalCount':totalcount
             }
-            ,'rows':self.get_rows(base_fields, queryset, start, limit)
-            ,'totalCount':totalcount
-        }
-        
-        if json_add:
-            jsondict.update(json_add)
+            
+            if json_add:
+                jsondict.update(json_add)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]        
         
         return utils.JSONserialise(jsondict) 
         

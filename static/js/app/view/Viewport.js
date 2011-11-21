@@ -62,17 +62,27 @@ Ext.define('ProtoUL.view.Viewport', {
         return this.menuPanel;
     },
 
-    DefineProtoModel: function( metaData , pConcept, modelClassName ){
+    DefineProtoModel: function( myMeta , modelClassName ){
             
-        console.log ( pConcept, ' Loading ' + modelClassName + '...' ); 
+        console.log ( myMeta.conceptName , ' Loading ' + modelClassName + '...' );
+        
+        var myFields = [];
+        for (var ix in myMeta.fields ) {
+            var vFld  =  myMeta.fields[ix]; 
+            var mField = {
+                name: vFld.dataIndex,
+                // type: vFld.type,
+                // useNull : vFld.allowNull, 
+                // defaultValue: vFld.defaultValue,
+                // persist: vFld.editPolicy,
+            };
+            myFields.push(mField);
+        }
+        
         Ext.define(modelClassName, {
             extend: 'ProtoUL.model.ProtoModel',
-            metaData : metaData,
-            fields: metaData.fields, 
-            proxy: {
-                type: 'ajax',
-                url: 'dynamic2.json'
-            }, 
+            fields: myFields, 
+
         });
   
     },
@@ -93,17 +103,20 @@ Ext.define('ProtoUL.view.Viewport', {
             console.log ( protoConcept, ' Loading  Pci ...  ' ); 
 
             Ext.Ajax.request({
+                method: 'GET',
                 url: _PConfig.urlProtoDefinition  ,
                 params : { 
-                    action : protoConcept 
+                    protoConcept : protoConcept 
                     },
-                method: 'GET',
                 success: function ( result, request ) { 
                     
                     console.log( protoConcept, ' Pci loaded ');
                     var myResult = Ext.decode( result.responseText )
-                       
-                    thisRef.DefineProtoModel( myResult.metaData , protoConcept, modelClassName  );
+
+                    // Colleccion de PCI, 
+                    _cllPCI[protoConcept]  = myResult.metaData  
+                                           
+                    thisRef.DefineProtoModel( myResult.metaData , modelClassName  );
                     thisRef.protoContainer.addTabPanel(rec);
 
                 },
@@ -115,8 +128,8 @@ Ext.define('ProtoUL.view.Viewport', {
 
         }  else {
 
-            // El modelo ya ha sido cargado         
-            this.protoContainer.addTabPanel(rec);
+            // El modelo ya ha sido cargado ( la cll meta es global )     
+            this.protoContainer.addTabPanel(rec );
                
         };
         

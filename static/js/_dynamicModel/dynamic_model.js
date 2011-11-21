@@ -37,7 +37,7 @@ var records = [{
 }];
 
 
-
+_gridTypeEditor
 // Lookup table (type => xtype)
 var type_lookup = new Object;
 type_lookup['int'] = 'numberfield';

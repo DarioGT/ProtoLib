@@ -14,11 +14,19 @@ Ext.define('ProtoUL.model.ProtoModel', {
     proxy: {
         type: 'ajax',
         api: {
-            read : 'protoExt/view.action',
-            create : 'protoExt/create.action/',
-            update: 'protoExt/update.action/',
-            destroy: 'protoExt/delete.action/'
+            read : 'protoExt/protoList.action',
+            create : 'protoExt/protoCreate.action/',
+            update: 'protoExt/protoUpdate.action/',
+            destroy: 'protoExt/protoDelete.action/'
         },
+        reader: {
+            type: 'json',
+            successProperty: 'success',
+            root: 'rows',
+            //@@  id: _meta.idProperty ,
+            id: 'id', 
+        },
+        
         writer: {
             type: 'json',
             // writeAllFields: true,
@@ -37,33 +45,7 @@ Ext.define('ProtoUL.model.ProtoModel', {
         }
     }, 
 
-
-    initComponent: function() {
-
-
-        // console.log ( 'model', this.protoConcept ); 
-
-
-        // Si no hay q meterlo al callback o al success 
-
-        // this.reader= {
-            // type: 'json',
-            // root: 'data',
-            // successProperty: 'success',
-            // // id: result.meta.id ,
-            // id: 'id',
-        // };
-// 
-// //      Definidos a nivel de STORE -------------------------------------
-        // this.proxy =  {
-            // type: 'ajax',
-            // url: 'protoExt/protoGetConceptData',
-            // method: 'POST'
-        // }; 
-
-        this.callParent(arguments);
-
-
-    },
+    //DGT  NO  pasa por aqui  
+    // initComponent: function() {},
     
 });

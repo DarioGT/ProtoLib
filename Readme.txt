@@ -1,5 +1,10 @@
 Tareas pendientes
 
+
+    **  Abrir un blog, estabelecer el roadmap, tomar codigo basico del admin 
+    leer toda la definicion del admin. separar un proyecto aparte. 
+    
+    
     **  Cargar la definicion de la grilla directamente de la dB
     Separar el llamado de definicion 
     HAce una tabla Buffer para este manejo 

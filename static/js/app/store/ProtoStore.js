@@ -8,31 +8,23 @@
  *              protoConcept
  */
 
+var PAGESIZE = 100; 
+
 Ext.define('ProtoUL.store.ProtoStore', {
     extend: 'Ext.data.Store',
     alias: 'store.protoStore',
 
-    // requires: [
-        // 'ProtoUL.model.ProtoModel',
-    // ],
-
     autoLoad: true,
-    pageSize: 100,
-    autoLoad: {start: 0, limit: 100},
-
-    initComponent: function() {
-        console.log ( 'store', this.protoConcept ); 
-
-        // this.model =  Ext.create('Ext.model.ProtoModel', {
-                // protoConcept : this.protoConcept,         
-              // }); 
- 
-              
-              
-        this.callParent();
+    pageSize: PAGESIZE,
+    autoLoad: {start: 0, limit: PAGESIZE},
+    remoteSort: true,
+    
+    baseParams: {
+        protoFilter: '{"pk" : 0,}',
+        protoConcept : this.protoConcept,
     },
     
-    
+    //DGT No pasa por aqui 
+    // initComponent: function() {},
 
-    
 });
