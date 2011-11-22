@@ -53,25 +53,35 @@ var store_template = {
     remoteFilter: false,
     
     // DATA is inserted here for the example to work on local drive (use proxy below)
-    data:[{id:1,first:"Fred",last:"Flintstone",email:"fred@flintstone.com"},
-          {id:2,first:"Wilma",last:"Flintstone",email:"wilma@flintstone.com"},
-          {id:3,first:"Pebbles",last:"Flintstone",email:"pebbles@flintstone.com"},
-          {id:4,first:"Barney",last:"Rubble",email:"barney@rubble.com"},
-          {id:5,first:"Betty",last:"Rubble",email:"betty@rubble.com"},
-          {id:6,first:"BamBam",last:"Rubble",email:"bambam@rubble.com"}],
+    // data:[{id:1,first:"Fred",last:"Flintstone",email:"fred@flintstone.com"},
+          // {id:2,first:"Wilma",last:"Flintstone",email:"wilma@flintstone.com"},
+          // {id:3,first:"Pebbles",last:"Flintstone",email:"pebbles@flintstone.com"},
+          // {id:4,first:"Barney",last:"Rubble",email:"barney@rubble.com"},
+          // {id:5,first:"Betty",last:"Rubble",email:"betty@rubble.com"},
+          // {id:6,first:"BamBam",last:"Rubble",email:"bambam@rubble.com"}],
 
     proxy: {
-        type: 'rest',
-        url: 'users.json',
-        reader: {
-            type: 'json',
-            root: 'data'
-        },
-        writer: {
-            type: 'json'
-        }
+                type: 'ajax',
+                url : 'protoExt/datos/', //  + this.protoConcept,
+                reader : {
+                    type: 'json',
+                    root: 'rows',
+                    successProperty: 'success',
+                    totalProperty: 'totalCount',
+                },
+
+        // type: 'ajax',
+        // url: 'users.json',
+        // reader: {
+            // type: 'json',
+            // root: 'data'
+        // },
+        // writer: {
+            // type: 'json'
+        // }
     }
 };
+
 
 
 // Skeleton grid (_PLUGINS_ & _STORE_, are placeholders)
@@ -182,9 +192,9 @@ function generateDynamicModel(records){
     columns = colRn.concat ( columns )
 
 
-    //
-    console.log ( Ext.encode ( fields ) ); 
-    console.log ( Ext.encode ( columns ) ); 
+    // Imprimir definiciones 
+    // console.log ( Ext.encode ( fields ) ); 
+    // console.log ( Ext.encode ( columns ) ); 
 
 
     grid_template.columns = columns;

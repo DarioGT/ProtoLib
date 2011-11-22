@@ -6,11 +6,10 @@
 Ext.define('ProtoUL.view.ProtoGrid' ,{
     extend: 'Ext.grid.Panel',
     alias : 'widget.protoGrid',
-
-    requires: [
-        // 'ProtoUL.store.ProtoStore',
-    ],
     
+    //DGT**  
+    stripeRows: true, 
+
     //requires: ['Ext.toolbar.Paging'],
     // iconCls: 'icon-grid',
 
@@ -19,8 +18,6 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
 
         console.log ( this.protoConcept + '  grid init'  ); 
 
-        
-        
         var modelClassName = _PConfig.clsBaseModel + this.protoConcept ; 
         if  (! Ext.ClassManager.isCreated( modelClassName )){
             console.log ( this.protoConcept, ' ERROR Pci  not loaded ' ); 
@@ -34,18 +31,18 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
             var myStore = Ext.create('Ext.data.Store', {
                 model : modelClassName, 
                 autoLoad: true,
-                remoteSort: true,
+                pageSize: _PAGESIZE,
+                // remoteSort: true,
                 // autoLoad: {start: 0, limit: PAGESIZE},
-                // pageSize: PAGESIZE,
                 proxy : {
                     type: 'ajax',
-                    url : 'protoExt/protoList/', //  + this.protoConcept,
-                    Reader : {
-                            type: 'json',
-                            root : 'rows',
-                            id : 'id',
-                            totalProperty: 'totalCount',
-                            },
+                    url : 'protoExt/protoList/', 
+                    reader : {
+                        type: 'json',
+                        root: 'rows',
+                        successProperty: 'success',
+                        totalProperty: 'totalCount',
+                    },
                     extraParams : {
                         protoConcept : this.protoConcept,
                         // protoFilter : '{"pk" : 0,}',
@@ -78,7 +75,7 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
         }
 
 
-        // REcupera la clase para obtener la meta 
+        // REcupera la clase para obtener la meta ------------------------------------------
         var myMeta = _cllPCI[ this.protoConcept ] ;                         
         var myColumns = [];
 
@@ -105,11 +102,22 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
         }
         
 
-        myColumns = [{"xtype":"rownumberer","width":30},{"text":"ID","sortable":true,"dataIndex":"id","hidden":true},{"text":"First Name","sortable":true,"dataIndex":"first","editor":{"xtype":"textfield"}},{"text":"Last Name","sortable":true,"dataIndex":"last","editor":{"xtype":null}},{"text":"Email","sortable":true,"dataIndex":"email","editor":{"xtype":"textfield"}}]; 
+        // myColumns = [{"xtype":"rownumberer","width":30},{"text":"ID","sortable":true,"dataIndex":"id","hidden":true},{"text":"First Name","sortable":true,"dataIndex":"first","editor":{"xtype":"textfield"}},{"text":"Last Name","sortable":true,"dataIndex":"last","editor":{"xtype":null}},{"text":"Email","sortable":true,"dataIndex":"email","editor":{"xtype":"textfield"}}]; 
                 
         this.columns = myColumns;  
         this.store = myStore; 
+        this.dockedItems = [{
+            xtype: 'pagingtoolbar',
+            dock:'bottom',
+            store: myStore,
+            displayInfo: true,
+            displayMsg: 'Displaying  {0} - {1} of {2}',
+            emptyMsg: "No register to display"
+        },];
+
         
+        this.callParent(arguments);
+
         // listeners: {
             // itemclick: function () {
                 // var data = grid_company.getSelectionModel().selected.items[0].data;
@@ -120,8 +128,6 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
             // }
         // }
 
-        
-        this.callParent(arguments);
 
 
 	},
@@ -129,26 +135,4 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
 });
 
 
-        // this.dockedItems = [
-        // {
-            // xtype: 'toolbar',
-            // items: [{
-                // iconCls: 'icon-save',
-                // itemId: 'add',
-                // text: 'Add',
-                // action: 'add'
-            // },{
-                // iconCls: 'icon-delete',
-                // text: 'Delete',
-                // action: 'delete'
-            // }]
-        // },
-        // {
-            // xtype: 'pagingtoolbar',
-            // dock:'top',
-            // store: 'Contacts',
-            // displayInfo: true,
-            // displayMsg: 'Displaying contacts {0} - {1} of {2}',
-            // emptyMsg: "No contacts to display"
-        // }];
 

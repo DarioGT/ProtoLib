@@ -85,7 +85,7 @@ Ext.define('ProtoUL.view.Viewport', {
         }
         
         
-        myFields = [{"name":"id","type":"int","useNull":true},{"name":"first","type":"string"},{"name":"last","type":"String"},{"name":"email","type":"string"}]
+        // myFields = [{"name":"id","type":"int","useNull":true},{"name":"first","type":"string"},{"name":"last","type":"String"},{"name":"email","type":"string"}]
         
         Ext.define(modelClassName, {
             extend: 'Ext.data.Model',

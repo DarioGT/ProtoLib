@@ -28,6 +28,9 @@ _gridTypeEditor = {
     'boolean' : 'checkbox',
 };
 
+// PageSize par default 
+_PAGESIZE = 100; 
+
 
 // ProtoUL.view.ProtoMasterDetail 
 _ComboFilterOp = [
