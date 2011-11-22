@@ -1,10 +1,13 @@
+/*
+ * 
+ */
 Ext.define('ProtoUL.view.Viewport', {
     extend: 'Ext.container.Viewport',
 
     requires: [
         'ProtoUL.view.MenuTree',
         // 'ProtoUL.view.ProtoProperties',
-        'ProtoUL.view.ProtoContainer',
+        'ProtoUL.view.ProtoTabContainer',
     ],
 
     initComponent: function(){
@@ -18,7 +21,7 @@ Ext.define('ProtoUL.view.Viewport', {
             },
             items: [
                 this.createMenuPanel(),
-                this.createProtoContainer(),
+                this.createProtoTabContainer(),
                 // this.createPropertyPanel(),
                 // this.createHeaderPanel(),
                 // this.createFooterPanel(),
@@ -66,11 +69,13 @@ Ext.define('ProtoUL.view.Viewport', {
             
         console.log ( myMeta.conceptName , ' Loading ' + modelClassName + '...' );
         
+        
         var myFields = [];
         for (var ix in myMeta.fields ) {
             var vFld  =  myMeta.fields[ix]; 
             var mField = {
-                name: vFld.dataIndex,
+                name: vFld.name,
+                type: 'string', 
                 // type: vFld.type,
                 // useNull : vFld.allowNull, 
                 // defaultValue: vFld.defaultValue,
@@ -79,8 +84,11 @@ Ext.define('ProtoUL.view.Viewport', {
             myFields.push(mField);
         }
         
+        
+        myFields = [{"name":"id","type":"int","useNull":true},{"name":"first","type":"string"},{"name":"last","type":"String"},{"name":"email","type":"string"}]
+        
         Ext.define(modelClassName, {
-            extend: 'ProtoUL.model.ProtoModel',
+            extend: 'Ext.data.Model',
             fields: myFields, 
 
         });
@@ -117,7 +125,7 @@ Ext.define('ProtoUL.view.Viewport', {
                     _cllPCI[protoConcept]  = myResult.metaData  
                                            
                     thisRef.DefineProtoModel( myResult.metaData , modelClassName  );
-                    thisRef.protoContainer.addTabPanel(rec);
+                    thisRef.protoTabContainer.addTabPanel(rec);
 
                 },
                 failure: function ( result, request) { 
@@ -129,42 +137,18 @@ Ext.define('ProtoUL.view.Viewport', {
         }  else {
 
             // El modelo ya ha sido cargado ( la cll meta es global )     
-            this.protoContainer.addTabPanel(rec );
+            this.protoTabContainer.addTabPanel(rec );
                
         };
         
     },   
 
-    createProtoContainer: function(){
-       this.protoContainer = Ext.create('widget.protoContainer', {
-            // title: 'Master',
-            // tbar: tb,
+    createProtoTabContainer: function(){
+       this.protoTabContainer = Ext.create('widget.protoTabContainer', {
             region: 'center',
             minWidth: 300,
-            // collapsible: false,
-            // layout: 'border',
-            // defaults: {
-                // collapsible: true,
-                // split: true
-            // },
-            // items: [{
-                // region: 'center',
-                // layout: 'fit',
-                // collapsible: false,
-                // // items: masterGrid
-                // xtype: 'contactlist'
-            // }, {
-                // title: 'Details',
-                // region: 'south',
-                // collapsed: false,
-                // layout: 'fit',
-                // height: 180,
-                // minSize: 75,
-                // // items: protoTabs,
-            // }]
-
         }); 
-        return this.protoContainer;
+        return this.protoTabContainer;
     },
 
 

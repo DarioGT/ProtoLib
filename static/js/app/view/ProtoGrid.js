@@ -8,8 +8,7 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
     alias : 'widget.protoGrid',
 
     requires: [
-        'ProtoUL.store.ProtoStore',
-        'ProtoUL.model.ProtoModel',
+        // 'ProtoUL.store.ProtoStore',
     ],
     
     //requires: ['Ext.toolbar.Paging'],
@@ -19,24 +18,67 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
 
 
         console.log ( this.protoConcept + '  grid init'  ); 
+
+        
+        
         var modelClassName = _PConfig.clsBaseModel + this.protoConcept ; 
         if  (! Ext.ClassManager.isCreated( modelClassName )){
             console.log ( this.protoConcept, ' ERROR Pci  not loaded ' ); 
         } ;
-        
-        console.log (  this.protoConcept, ' Loading store ...  '  ); 
-    
-        // this.store = Ext.create('ProtoUL.store.ProtoStore', {
-            // model : this.model, 
-            // protoConcept : this.protoConcept,   
-            // }) ; 
-    
-        var myStore = Ext.create('Ext.data.Store', {
-            model: modelClassName
-        });
+
+        // VErifica si el store viene como parametro ( Detail )
+        if (typeof this.protoMasterStore == 'undefined') {
+            
+            console.log (  this.protoConcept, ' Loading store ...  '  ); 
+
+            var myStore = Ext.create('Ext.data.Store', {
+                model : modelClassName, 
+                autoLoad: true,
+                remoteSort: true,
+                // autoLoad: {start: 0, limit: PAGESIZE},
+                // pageSize: PAGESIZE,
+                proxy : {
+                    type: 'ajax',
+                    url : 'protoExt/protoList/', //  + this.protoConcept,
+                    Reader : {
+                            type: 'json',
+                            root : 'rows',
+                            id : 'id',
+                            totalProperty: 'totalCount',
+                            },
+                    extraParams : {
+                        protoConcept : this.protoConcept,
+                        // protoFilter : '{"pk" : 0,}',
+                        // protoFilterBase: '{"' + item.protoFilter + '" : ' + idMasterGrid + ',}',
+                        // protoApp: protoAppCode,
+                        },
+                    },
+                    // sorters: [{
+                        // property: 'leaf',
+                        // direction: 'ASC'
+                    // },],
+                    
+            });
+            
+            
+            // store.getProxy().extraParams.feed = url;
+            // store.loadPage(1);
+
+            myStore.proxy.actionMethods.read = 'POST';
+            myStore.load(); 
+            // Ext.apply(Ext.data.AjaxProxy.prototype.actionMethods, { read: 'POST' });
+
+        } else {
+
+            console.log (  this.protoConcept, ' Promoting details store  ...  '  ); 
+
+            var myStore = this.protoMasterStore
+            myStore.load();
+            
+        }
 
 
-        // DGT**  REcuperar la clase para obtener la meta 
+        // REcupera la clase para obtener la meta 
         var myMeta = _cllPCI[ this.protoConcept ] ;                         
         var myColumns = [];
 
@@ -48,13 +90,13 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
         for (var ix in myMeta.fields ) {
             var vFld  =  myMeta.fields[ix]; 
             var col = {
+                dataIndex: vFld.name,
                 text: vFld.header,
-                sortable: vFld.sortable,
-                dataIndex: vFld.dataIndex,
-                flex: vFld.flex,
-                hidden: vFld.hidden,
-                width: vFld.width ,
-                editor:  { xtype: _gridTypeEditor[vFld.type] }, 
+                // sortable: vFld.sortable,
+                // flex: vFld.flex,
+                // hidden: vFld.hidden,
+                // width: vFld.width ,
+                // editor:  { xtype: _gridTypeEditor[vFld.type] }, 
                 // renderer: this.formatDate,                
             };
 
@@ -62,8 +104,22 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
             
         }
         
+
+        myColumns = [{"xtype":"rownumberer","width":30},{"text":"ID","sortable":true,"dataIndex":"id","hidden":true},{"text":"First Name","sortable":true,"dataIndex":"first","editor":{"xtype":"textfield"}},{"text":"Last Name","sortable":true,"dataIndex":"last","editor":{"xtype":null}},{"text":"Email","sortable":true,"dataIndex":"email","editor":{"xtype":"textfield"}}]; 
+                
         this.columns = myColumns;  
         this.store = myStore; 
+        
+        // listeners: {
+            // itemclick: function () {
+                // var data = grid_company.getSelectionModel().selected.items[0].data;
+                // grid_product.setTitle(data.name + ' Products List');
+                // store_product.clearFilter();
+                // store_product.filter('company_id', data.id);
+                // store_product.load();
+            // }
+        // }
+
         
         this.callParent(arguments);
 

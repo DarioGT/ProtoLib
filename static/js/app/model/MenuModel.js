@@ -7,6 +7,7 @@ Ext.define('ProtoUL.model.MenuModel', {
     extend: 'Ext.data.Model',
     alias: 'model.menuModel',
     proxy: {
+        method: 'GET',
         type: 'ajax',
         url: _PConfig.urlMenu , 
     }, 

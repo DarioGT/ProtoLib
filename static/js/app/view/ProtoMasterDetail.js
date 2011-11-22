@@ -19,6 +19,9 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
         masterGrid = Ext.create('ProtoUL.view.ProtoGrid', {
             protoConcept : this.protoConcept,   
         }) ; 
+        
+        // Guarda el store para efectos de eventos y referencias 
+        var protoMasterStore = masterGrid.store  
 
         // coleccion con los store de los detalles  y su indice  
         var cllStoreDet = [];
@@ -50,7 +53,6 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
                 split: true
             },
             items: [{
-                // title: 'Master',
                 tbar: tb,
                 region: 'center',
                 layout: 'fit',
@@ -70,7 +72,7 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
                 items: protoTabs,
             }]
         });
-        
+
         this.callParent();
     },
     

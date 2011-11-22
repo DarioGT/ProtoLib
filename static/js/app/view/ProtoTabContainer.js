@@ -1,8 +1,8 @@
 // Contiene  los tabs para crear las pcls 
 
-Ext.define('ProtoUL.view.ProtoContainer', {
+Ext.define('ProtoUL.view.ProtoTabContainer', {
     extend: 'Ext.tab.Panel',
-    alias: 'widget.protoContainer',
+    alias: 'widget.protoTabContainer',
     requires: ['ProtoUL.view.ProtoMasterDetail', ],
 
     initComponent: function() {
@@ -19,12 +19,12 @@ Ext.define('ProtoUL.view.ProtoContainer', {
         title: rec.data.text ,
         closable: true, 
         layout: 'fit',
-        // xtype: 'protoMasterDetail',
         items: [
             this.createProtoMasterDetail( rec.data.id ),
             ], 
         });
 
+        this.setActiveTab(tab)
     },
 
     createProtoMasterDetail: function( protoConceptId ){

@@ -9,7 +9,7 @@ _PConfig =  {
     urlMenu : 'protoExt/protoGetMenuData', 
     urlProtoDefinition : 'protoExt/protoGetPCI', 
    
-    clsBaseModel: 'ProtoUL.model.ProtoModel.', 
+    clsBaseModel: 'ProtoUL.model.', 
 }; 
 
 
@@ -56,6 +56,11 @@ _ComboFilterOp = [
     ]; 
  
  
+ 
+ /*
+  *  Configuracion del metodo por defecto  
+  */
+  // Ext.data.Connection.prototype.method = 'GET';
  
  
  /*

@@ -2,29 +2,16 @@
 function newDjangoGrid(protoAppCode, protoConcept, protoMasterStore ) {
 
 
+    // Reader y Proxy  ==============================================================================
+    protoProxy = new Ext.data.HttpProxy({
+        url: 'protoExtjsGridDefinition/?' + protoConcept,
+        method: 'POST'
+    });
 
-    // Store MASTER   ================================================================================
-    if (typeof protoMasterStore == 'undefined') {
-        var protoMasterStore = new Ext.data.JsonStore({
-            autoLoad: true,
-            baseParams: {
-                protoFilter: '{"pk" : 0,}',
-                protoApp: protoAppCode,
-                protoConcept: protoConcept,
-                modelLoad: '1',
-            },
-            remoteSort: true,
-            proxy: protoProxy,
-            reader: protoReader
-        });
-    } else {
-        
-        protoMasterStore.load();
-    }
-
-
-
-XXXXXXXXXXXXXXXX
+    protoReader = new Ext.data.JsonReader({
+        root: 'rows',
+        id: 'id'
+    });
 
     // ===================================================================================
     //  Logica de operacion    
