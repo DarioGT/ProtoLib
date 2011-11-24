@@ -6,8 +6,8 @@
 
 // Config Variables 
 _PConfig =  {
-    urlMenu : 'protoExt/protoGetMenuData', 
-    urlProtoDefinition : 'protoExt/protoGetPCI', 
+    urlMenu : 'protoExt/protoGetMenuData/', 
+    urlProtoDefinition : 'protoExt/protoGetPCI/', 
    
     clsBaseModel: 'ProtoUL.model.', 
 }; 

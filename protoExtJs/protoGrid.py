@@ -231,7 +231,7 @@ class ProtoGridFactory(object):
         return rows
          
         
-    def to_grid(self, queryset, start = 0, limit = 0, totalcount = None, json_add = {}, colModel = None, sort_field = 'id', sort_direction = 'DESC'):
+    def to_grid(self, queryset, start = 0, limit = 0, totalcount = None, json_add = {}, colModel = None, sort_field = 'id', sort_direction = 'DESC', protoConcept = ''):
         """ return the given queryset as an ExtJs grid config
             includes full metadata (columns, renderers, totalcount...)
             includes the rows data
@@ -244,16 +244,19 @@ class ProtoGridFactory(object):
             base_fields = self.get_fields(colModel)
             protoDetails = self.get_details()
             
-            # todo : stupid ?
+            #Todo : Debe ser buscao en la META
             id_field = base_fields[0]['name']
                 
             jsondict = {
-                 'succes':True
-                ,'metaData':{
-                     'root':'rows'
-                    ,'totalProperty':'totalCount'
-                    ,'successProperty':'success'
-                    ,'idProperty':id_field
+                 'succes':True,
+                 'metaData':{
+                     'root':'rows',
+                     'totalProperty':'totalCount',
+                     'successProperty':'success',
+                     'shortTitle': protoConcept,
+                     'description': protoConcept,
+
+                     'idProperty':id_field
                     ,'sortInfo':{
                        "field": sort_field
                        ,"direction": sort_direction

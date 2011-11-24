@@ -8,6 +8,7 @@ Ext.define('ProtoUL.view.Viewport', {
         'ProtoUL.view.MenuTree',
         // 'ProtoUL.view.ProtoProperties',
         'ProtoUL.view.ProtoTabContainer',
+        // 'ProtoUL.globals.Tools',
     ],
 
     initComponent: function(){
@@ -65,36 +66,6 @@ Ext.define('ProtoUL.view.Viewport', {
         return this.menuPanel;
     },
 
-    DefineProtoModel: function( myMeta , modelClassName ){
-            
-        console.log ( myMeta.conceptName , ' Loading ' + modelClassName + '...' );
-        
-        
-        var myFields = [];
-        for (var ix in myMeta.fields ) {
-            var vFld  =  myMeta.fields[ix]; 
-            var mField = {
-                name: vFld.name,
-                type: 'string', 
-                // type: vFld.type,
-                // useNull : vFld.allowNull, 
-                // defaultValue: vFld.defaultValue,
-                // persist: vFld.editPolicy,
-            };
-            myFields.push(mField);
-        }
-        
-        
-        // myFields = [{"name":"id","type":"int","useNull":true},{"name":"first","type":"string"},{"name":"last","type":"String"},{"name":"email","type":"string"}]
-        
-        Ext.define(modelClassName, {
-            extend: 'Ext.data.Model',
-            fields: myFields, 
-
-        });
-  
-    },
-
 
     loadPci: function(rec){
         
@@ -123,9 +94,9 @@ Ext.define('ProtoUL.view.Viewport', {
 
                     // Colleccion de PCI, 
                     _cllPCI[protoConcept]  = myResult.metaData  
-                                           
-                    thisRef.DefineProtoModel( myResult.metaData , modelClassName  );
-                    thisRef.protoTabContainer.addTabPanel(rec);
+                    DefineProtoModel( myResult.metaData , modelClassName  );
+                    
+                    thisRef.protoTabContainer.addTabPanel( rec.data.id );
 
                 },
                 failure: function ( result, request) { 
@@ -137,7 +108,7 @@ Ext.define('ProtoUL.view.Viewport', {
         }  else {
 
             // El modelo ya ha sido cargado ( la cll meta es global )     
-            this.protoTabContainer.addTabPanel(rec );
+            this.protoTabContainer.addTabPanel(rec.data.id );
                
         };
         

@@ -9,9 +9,8 @@ Ext.define('ProtoUL.UI.TbMasterDetail', {
 
 
         // Asigna una referencia al objeto 
-        tbMasterDetail = this ; 
-
         var myMeta = this.protoMeta; 
+        var __MasterDetail = this.objMasterDet; 
 
 
         // Menu Detail 
@@ -21,11 +20,12 @@ Ext.define('ProtoUL.UI.TbMasterDetail', {
             text: '<b>Promote Detail<b>',
             id: menuPromDetail,
             disabled: true,
-            handler: tbMasterDetail.onMenuPromoteDetail, 
+            handler:  onMenuPromoteDetail,
         },{
             xtype: 'menuseparator'
         });
         configureMenuDetail( ); 
+
 
 
         // Combo Columnas  
@@ -69,15 +69,16 @@ Ext.define('ProtoUL.UI.TbMasterDetail', {
         // Load Data button 
         var searchBtn = new Ext.button.Split({
             text: 'Load data',
-            handler: tbMasterDetail.onClickLoadData,
+            handler: onClickLoadData,
             // iconCls: 'blist',
             menu: {
                 items: [{
                     text: '<b>Clear filter<b>',
-                    handler: tbMasterDetail.onClickFilter
-                }, {
-                    text: 'add filter',
-                    handler: tbMasterDetail.onClickFilter
+                    handler: onClickClearFilter, 
+                    
+                // }, {
+                    // text: 'add filter',
+                    // handler: __MasterDetail.onClickFilter
                 }]
             }
         })
@@ -94,8 +95,10 @@ Ext.define('ProtoUL.UI.TbMasterDetail', {
             searchBtn    
             ];
 
-
+        // Inicializa Combos 
+        clearCombos()     
         
+        // Objetos internos 
         this.items = tbItems;      
         this.callParent();
 
@@ -147,8 +150,13 @@ Ext.define('ProtoUL.UI.TbMasterDetail', {
                     protoFilter: pDetails[vDet],
                     ixTab: ixTabC,
                 });
+                
                 // Agrego el handler q activara el tab a partir del menu
-                item.on('click', tbMasterDetail.onMenuSelectDetail);
+                // item.on('click', onMenuSelectDetail);
+                item.on({
+                    click: { fn: __MasterDetail.onMenuSelectDetail,scope: __MasterDetail  },
+                });                 
+                
     
                 ixTabC += 1;
             };
@@ -159,28 +167,63 @@ Ext.define('ProtoUL.UI.TbMasterDetail', {
             };
         };
 
-        this.addEvents('clickfilter', 'clickloaddata', 'menupromotedetail', 'menuselectdetail');
+
+        function onClickLoadData ( btn ) { 
+    
+            var sFilter = '';
+        
+            if ((comboCols.getValue() == '') && (comboOp.getValue() == '') && (searchCr.getValue() == '' )) {
+                sFilter = '';
+            } else if ((comboCols.getValue() == '') || (comboOp.getValue() == '') || (searchCr.getValue() == '' )) {
+                Ext.Msg.alert('Status', 'Invalid criteria');
+                return; 
+            } else {
+                sFilter = '{"' + comboCols.getValue() + '__' + comboOp.getValue() + '" : "' + searchCr.getValue() + '",}';
+            }
+            
+            __MasterDetail.onClickLoadData ( sFilter  );
+    
+        }; 
+
+        function onClickClearFilter (item ){
+            // TODO: Manejara los filtros compuestos ( QBE )
+    
+            clearCombos()
+            onClickLoadData( {} );
+    
+        } 
+
+        // function onMenuSelectDetail (item) {
+            // __MasterDetail.onMenuSelectDetail( item  );
+        // }
+
+        function clearCombos ( ){
+            comboCols.setValue('');
+            comboOp.setValue(''); 
+            searchCr.setValue(''); 
+        }; 
+
+
+        function onMenuPromoteDetail  (item) {
+    
+            // Verifica q halla un tab activo 
+            if (__MasterDetail.ixActiveTab < 0) { return; }
+    
+            // carga el store 
+            var tmpStore = __MasterDetail.cllStoreDet[__MasterDetail.ixActiveTab]
+    
+    
+            __TabContainer.addTabPanel ( 
+                   tmpStore.protoConcept , 
+                   tmpStore.getProxy().extraParams.protoFilterBase 
+               ); 
+            
+        };
+
+
+
 
     }, 
     
-    onClickFilter: function( item ){
-        // console.log ( 'onClickFilter' , item )
-        this.fireEvent('clickfilter', this, item );
-    }, 
-    onClickLoadData: function (btn) { 
-        // console.log ( 'onClickLoadData' , btn )
-        this.fireEvent('clickloaddata', this, btn );
-
-    }, 
-    onMenuPromoteDetail: function (item) {
-        // console.log ( 'onMenuPromoteDetail' , item )
-        this.fireEvent('menupromotedetail', this, item );
-        
-    },
-    onMenuSelectDetail: function (item) {
-        // console.log ( 'onMenuSelectDetail' , item )
-        this.fireEvent('menuselectdetail', this, item );
-
-    },
 
 }); 

@@ -10,28 +10,35 @@ Ext.define('ProtoUL.view.ProtoTabContainer', {
             border: false
         };
         
+        
+        __TabContainer = this; 
+        
         this.callParent();
     },
     
-    addTabPanel: function( rec  ){
-        
+    addTabPanel: function( protoConcept, protoFilterBase  ){
+
+        var myMeta = _cllPCI[ protoConcept ] ;
+                                 
         var tab = this.add({
-        title: rec.data.text ,
-        closable: true, 
-        layout: 'fit',
-        items: [
-            this.createProtoMasterDetail( rec.data.id ),
-            ], 
+            title: myMeta.shortTitle  ,
+            closable: true, 
+            layout: 'fit',
+            items: [
+                this.createProtoMasterDetail( protoConcept, protoFilterBase ),
+                ], 
         });
 
         this.setActiveTab(tab)
     },
 
-    createProtoMasterDetail: function( protoConceptId ){
-        this.MDPanel = Ext.create('widget.protoMasterDetail', {
-            protoConcept : protoConceptId,
+    createProtoMasterDetail: function( protoConcept, protoFilterBase   ){
+
+        var MDPanel = Ext.create('widget.protoMasterDetail', {
+            protoConcept : protoConcept,
+            protoFilterBase : protoFilterBase,
         });
-        return this.MDPanel;
+        return MDPanel;
     },
     
 

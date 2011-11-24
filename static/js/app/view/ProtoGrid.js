@@ -24,55 +24,56 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
         } ;
 
         // VErifica si el store viene como parametro ( Detail )
-        if (typeof this.protoMasterStore == 'undefined') {
-            
-            console.log (  this.protoConcept, ' Loading store ...  '  ); 
-
-            var myStore = Ext.create('Ext.data.Store', {
-                model : modelClassName, 
-                autoLoad: true,
-                pageSize: _PAGESIZE,
-                // remoteSort: true,
-                // autoLoad: {start: 0, limit: PAGESIZE},
-                proxy : {
-                    type: 'ajax',
-                    url : 'protoExt/protoList/', 
-                    reader : {
-                        type: 'json',
-                        root: 'rows',
-                        successProperty: 'success',
-                        totalProperty: 'totalCount',
-                    },
-                    extraParams : {
-                        protoConcept : this.protoConcept,
-                        // protoFilter : '{"pk" : 0,}',
-                        // protoFilterBase: '{"' + item.protoFilter + '" : ' + idMasterGrid + ',}',
-                        // protoApp: protoAppCode,
-                        },
-                    },
-                    // sorters: [{
-                        // property: 'leaf',
-                        // direction: 'ASC'
-                    // },],
-                    
-            });
-            
-            
-            // store.getProxy().extraParams.feed = url;
-            // store.loadPage(1);
-
-            myStore.proxy.actionMethods.read = 'POST';
-            myStore.load(); 
-            // Ext.apply(Ext.data.AjaxProxy.prototype.actionMethods, { read: 'POST' });
-
+        if (typeof this.protoFilterBase == 'undefined') {
+            var myFilter = '{"pk" : 0,}'            
         } else {
+            var myFilter = ''
+        };   
+        
+        console.log (  this.protoConcept, ' Loading store ...  '  ); 
 
-            console.log (  this.protoConcept, ' Promoting details store  ...  '  ); 
-
-            var myStore = this.protoMasterStore
-            myStore.load();
+        var myStore = Ext.create('Ext.data.Store', {
+            model : modelClassName, 
+            autoLoad: true,
+            pageSize: _PAGESIZE,
+            // remoteSort: true,
+            // autoLoad: {start: 0, limit: PAGESIZE},
+            proxy : {
+                type: 'ajax',
+                url : 'protoExt/protoList/', 
+                reader : {
+                    type: 'json',
+                    root: 'rows',
+                    successProperty: 'success',
+                    totalProperty: 'totalCount',
+                },
+                extraParams : {
+                    protoConcept : this.protoConcept,
+                    protoFilter : myFilter,
+                    protoFilterBase: this.protoFilterBase, 
+                    // protoApp: protoAppCode,
+                },
+                // sorters: [{
+                    // property: 'leaf',
+                    // direction: 'ASC'
+                // },],
+            },
+            listeners: {
+                'load' :  function(store,records,options) {
+                    this.loaded = true;
+                }
+            }, 
+                    
+        });
             
-        }
+            
+
+        myStore.proxy.actionMethods.read = 'POST';
+        // myStore.load(); 
+
+        // Ext.apply(Ext.data.AjaxProxy.prototype.actionMethods, { read: 'POST' });
+        // store.getProxy().extraParams.feed = url;
+        // store.loadPage(1);
 
 
         // REcupera la clase para obtener la meta ------------------------------------------
