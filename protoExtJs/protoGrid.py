@@ -19,15 +19,16 @@ class ProtoGridFactory(object):
 
         # Obtiene el nombre de la entidad 
         self.nomConcept = self.model._meta.object_name 
-        
-        # Clase conceptos  
-        mConcept = models.get_model('metaDb', 'Concept').objects.filter( code = self.nomConcept ).get()
 
+        
         # Get ConcpetsUdp
         try:
-            mConceptUdps = mConcept.udp_set.all()
-        except: 
+            pass
+#            mConcept = models.get_model('metaDb', 'Concept').objects.filter( code = self.nomConcept ).get()
+#            mConceptUdps = mConcept.udp_set.all()
+        finally: 
             mConceptUdps = []
+
 
 #       Dict creation 
         conceptUpdDict = {}

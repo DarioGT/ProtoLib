@@ -1,17 +1,20 @@
 Tareas pendientes
 
+    ** Leer todo del admin y de los modelos, usar la logica del admin
+    Esto permitira proponer el producto a la comunidad Django 
+    
+    ** cambiar Db por MSSS y probar  
+    ** eliminar llamados al modelo "Concept" leer del admin     
 
     **  Abrir un blog, estabelecer el roadmap, tomar codigo basico del admin 
     leer toda la definicion del admin. separar un proyecto aparte. 
     
     
     **  Cargar la definicion de la grilla directamente de la dB
-    Separar el llamado de definicion 
     HAce una tabla Buffer para este manejo 
 
     ** Separa el llamado Ajax como un singleton, 
-    Esto hara q solo se llame una vez
-    Agregar validacion 
+    Esto hara q solo se llame una vez 
     Tomar como referencia  feed-viewer/app/lib/FeedValidator.js   ( mvc )
 
 
@@ -41,6 +44,8 @@ Tareas pendientes
 ------------------------------------------------------------------------
 
 11/11/19
+
+Ok    Separar los datos dela  definicion 
 
 NO  Ext.ux.form.SearchField
     Es un widget especializado en esto,  y con un campo de base adicional se podria manejar 
