@@ -27,7 +27,8 @@ Ext.define('ProtoUL.view.MenuTree', {
     listeners: {
         
         // .view.View , .data.Model record, HTMLElement item, Number index, .EventObject e, Object eOpts
-        'itemdblclick': function( view, rec, item, index, evObj , eOpts ) {
+        // 'itemdblclick': function( view, rec, item, index, evObj , eOpts ) {
+        'itemclick': function( view, rec, item, index, evObj , eOpts ) {
             if ( rec.get('leaf') ) {
                 // console.log( view, rec )
                 this.fireEvent('menuSelect', this, rec.data.id);

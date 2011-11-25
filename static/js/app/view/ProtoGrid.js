@@ -26,6 +26,8 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
         // VErifica si el store viene como parametro ( Detail )
         if (typeof this.protoFilterBase == 'undefined') {
             var myFilter = '{"pk" : 0,}'            
+	        // TODO: Autoload
+	        var myFilter = ''
         } else {
             var myFilter = ''
         };   
