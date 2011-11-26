@@ -41,7 +41,7 @@ class ProtoGridFactory(object):
         list_display = verifyList( getattr(model_admin , 'list_display', []))
         
 #       REORDER  (include )  cols if defined  
-        if list_display:
+        if len( list_display ) > 2 :   # Por defecto solo vienen  Chk, _str_         
             for field in list_display:
                 added = False
                 for f in model_fields:
@@ -118,7 +118,11 @@ class ProtoGridFactory(object):
                 #fdict['editor'] = 'new Ext.form.NumberField()'
                 
             elif  field.__class__.__name__ == 'ForeignKey':
-                fdict['query_code'] = 'numbercolumn '
+                #TODO: Agregar columna __unicode__ de la tabla padre, con el header definido 
+                #y ocultar la columna de la llave 
+                fdict['xtype'] = 'numbercolumn '
+                self.fields.append(fdict)
+
                 pass
                 # TODO: Zoom,  Convertir ID en __unicode__ 
                 

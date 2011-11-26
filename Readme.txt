@@ -1,5 +1,12 @@
 Tareas pendientes
 
+	** Para el menu, cargar un Ajax con la config general de la app y luego pasar el store al menu,
+	   El autoload se definira aqui
+	
+	** Cargar el page_limit del admin, para cada entidad, si no se envia asumir el vr por defecto 
+	
+	** En la lectura del modelo carga una col con un vr significativo prara las FKey, 
+
     ** Leer todo del admin y de los modelos, usar la logica del admin
     Esto permitira proponer el producto a la comunidad Django 
     
