@@ -146,8 +146,9 @@ Ext.define('ProtoUL.UI.TbMasterDetail', {
                 // console.log( pDetails[vTab] + " ");
                 bDetails = true;
                 var item = menuDetail.add({
-                    text: vDet,
-                    protoFilter: pDetails[vDet],
+                    text: pDetails[vDet].conceptDetail,
+                    detailField: pDetails[vDet].detailField,
+                    masterField: pDetails[vDet].masterField,
                     ixTab: ixTabC,
                 });
                 

@@ -92,10 +92,10 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
             var col = {
                 dataIndex: vFld.name,
                 text: vFld.header,
-                // sortable: vFld.sortable,
-                // flex: vFld.flex,
-                // hidden: vFld.hidden,
-                // width: vFld.width ,
+                sortable: vFld.sortable,
+                flex: vFld.flex,
+                hidden: vFld.hidden,
+                width: vFld.width ,
                 // editor:  { xtype: _gridTypeEditor[vFld.type] }, 
                 // renderer: this.formatDate,                
             };

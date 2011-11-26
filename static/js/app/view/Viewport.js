@@ -31,6 +31,20 @@ Ext.define('ProtoUL.view.Viewport', {
 
         this.callParent(arguments);
         
+        
+    },
+
+    // Eventos despues de cargado el panel 
+    afterRender: function(){
+        this.callParent(arguments);
+
+        // Carga las PCI de autoload
+        // TODO: Esto podria ser un llamado configurado por usuario  
+        for (var autoPci in _AUTOLOAD_PCI) {
+            console.log ( 'AutoLoad' , _AUTOLOAD_PCI[autoPci])
+            this.loadPci( _AUTOLOAD_PCI[autoPci] )
+        }
+        
     },
 
     createMenuPanel: function(){
@@ -67,11 +81,11 @@ Ext.define('ProtoUL.view.Viewport', {
     },
 
 
-    loadPci: function(rec){
+    loadPci: function( menuOpt ){
         
         
         // *** El truco es q no se crea el modelo, solo se define
-        var protoConcept = rec.data.id ;  
+        var protoConcept = menuOpt ;  
         var thisRef = this ;
         
         console.log( protoConcept, ' Loading MasterPanel ...')
@@ -96,7 +110,7 @@ Ext.define('ProtoUL.view.Viewport', {
                     _cllPCI[protoConcept]  = myResult.metaData  
                     DefineProtoModel( myResult.metaData , modelClassName  );
                     
-                    thisRef.protoTabContainer.addTabPanel( rec.data.id );
+                    thisRef.protoTabContainer.addTabPanel( protoConcept );
 
                 },
                 failure: function ( result, request) { 
@@ -108,7 +122,7 @@ Ext.define('ProtoUL.view.Viewport', {
         }  else {
 
             // El modelo ya ha sido cargado ( la cll meta es global )     
-            this.protoTabContainer.addTabPanel(rec.data.id );
+            this.protoTabContainer.addTabPanel(protoConcept );
                
         };
         

@@ -1,114 +1,99 @@
 import sys 
 import utils
 from django.db import models
+from globale.admin.sites import  site
 
 # Si el campo no esta en la lista de campos a presentar se crea de manera virtual 
 from utils import VirtualField
 
-class ProtoGridFactory(object):
+def verifyList( obj ):
+#   DGT:  Los objetos del admin son en su mayoria del tipo tuple,
+#   Es necesario convertirlos a listas por facilidad de trabajo 
+    if obj is None:  obj = []
+    if type( obj ) != type([]):  [obj]
+    return obj 
 
+def verifyStr( vrBase , vrDefault ):
+    sAux = vrBase or vrDefault
+    return  u'%s' % sAux 
+
+class ProtoGridFactory(object):
 
     def __init__(self, model):
             
         self.model = model          # the model to use as reference
         self.fields = []            # holds the extjs fields
         self.base_fields = []       # holds the base model fields
-        
-        model_fields = self.model._meta._fields()
-        excludes = getattr(self.Meta, 'exclude', [])
 
         # Obtiene el nombre de la entidad 
         self.nomConcept = self.model._meta.object_name 
-
+        self.title = self.model._meta.verbose_name.title()
         
-        # Get ConcpetsUdp
-        try:
-            pass
-#            mConcept = models.get_model('metaDb', 'Concept').objects.filter( code = self.nomConcept ).get()
-#            mConceptUdps = mConcept.udp_set.all()
-        finally: 
-            mConceptUdps = []
+        model_fields = self.model._meta._fields()
 
+        #DGT Siempre existe, la creacion del site la asigna por defecto 
+        model_admin = site._registry.get( model )
 
-#       Dict creation 
-        conceptUpdDict = {}
+        self.protoModel = getattr(model, 'protoExt', {})
+        self.protoAdmin = getattr(model_admin, 'protoExt', {})
 
-
-#       DGT: Determina la posicion en la vista, 0 : hiden
-#       viewPosition = id, username, email 
-        self.getUdp( conceptUpdDict, mConceptUdps, 'viewPosition', 'String', '' )
-            
+        excludes =  verifyList( getattr(model_admin , 'exclude', [])) 
+        list_display = verifyList( getattr(model_admin , 'list_display', []))
         
 #       REORDER  (include )  cols if defined  
-        viewPosition = conceptUpdDict.get('viewPosition', '')
-        if viewPosition and len(viewPosition) > 0:
-            viewPosition = [x.strip() for x in viewPosition.split(',')]
-            for field in viewPosition:
+        if list_display:
+            for field in list_display:
                 added = False
                 for f in model_fields:
                     if f.name == field:
                         added = True
                         self.base_fields.append(f)
-                if not added:
-                    self.base_fields.append(VirtualField(field))
+#                if not added:
+#                    self.base_fields.append(VirtualField(field))
         else:
             self.base_fields = model_fields
 
         
         for field in self.base_fields:
-            
-            if field.name in excludes:
-                continue
+            if field.name in excludes: continue
+
+            #----------------            
+            #field.default, field.editable, field.error_message, field.help_text, fiedl.verbose_name_plural
+            #field.blank, field.null, field.choises 
+
+            protoField = getattr(field , 'protoExt', {})
             
             # Field Attrs   ------------------------------------------------------------------
-            fdict = {'name':field.name, 'header': field.name}
+            fdict = { 
+                     'name':field.name, 
+                     'header': verifyStr( field.verbose_name,  field.name ) 
+                     }
 
-            if field.__class__.__name__ == VirtualField:
-                fdict['allowSort']= '0'
-                continue
+#           Col visualisation 
+            self.getUdp( fdict, protoField, 'hidden', 'Boolean', False)
 
-            # Busca  la propiedad 
-            try:
-                mProperty  = mConcept.property_set.get( code = field.name )
-                mUdps = mProperty.udp_set.all()
-            except: 
-                mUdps = []
-
-            # Verifica la UDP 
-            if len(mUdps) > 0 :
-
-#               Col visualisation 
-                self.getUdp( fdict, mUdps, 'hidden', 'Boolean', False)
-
-#               Columns in Query Combo 
-                self.getUdp( fdict, mUdps, 'allowFilter', 'Boolean', True )
-                
-#               The column is sortable  
-                self.getUdp( fdict, mUdps, 'sortable', 'Boolean', True )
-
-#               Permite la sintaxis objeto del QRM  [foreing]__[campo] 
-                self.getUdp( fdict, mUdps, 'queryCode', 'String', '' )
-
-#               Permite la sintaxis objeto del QRM  [foreing]__[campo] 
-                self.getUdp( fdict, mUdps, 'width', 'Numeric', 0 )
-
-#               Permite la sintaxis objeto del QRM  [foreing]__[campo] 
-                self.getUdp( fdict, mUdps, 'align', 'String', '' )
-
-#               Permite la sintaxis objeto del QRM  [foreing]__[campo] 
-                self.getUdp( fdict, mUdps, 'tooltip', 'String', '' )
-
-#            if getattr(field, 'verbose_name', None) and field.verbose_name != field.name:
-#                fdict['tooltip'] = u'%s' %  field.verbose_name
+#           Columns in Query Combo 
+            self.getUdp( fdict, protoField, 'allow_filter', 'Boolean', True )
             
+#           The column is sortable  
+            self.getUdp( fdict, protoField, 'sortable', 'Boolean', True )
+
+#           Permite la sintaxis objeto del QRM  [foreing]__[campo] 
+            self.getUdp( fdict, protoField, 'query_code', 'String', '' )
+
+            self.getUdp( fdict, protoField, 'width', 'Numeric', 0 )
+            self.getUdp( fdict, protoField, 'align', 'String', '' )
+            self.getUdp( fdict, protoField, 'tooltip', 'String', '' )
+            self.getUdp( fdict, protoField, 'flex', 'Numeric', 0 )
+
             if field.name == 'id':
-                fdict['id']='id'
+                fdict['hidden']= True
                 
-#            if  field.__class__.__name__ == 'DateTimeField':
-#                fdict['type'] = 'datetime'
-#                fdict['xtype'] = 'datecolumn' 
-#                fdict['dateFormat'] = 'Y-m-d H:i:s'
-#                fdict['format'] = 'Y-m-d H:i:s'
+            if  field.__class__.__name__ == 'DateTimeField':
+                fdict['type'] = 'datetime'
+                fdict['xtype'] = 'datecolumn' 
+                fdict['dateFormat'] = 'Y-m-d H:i:s'
+                fdict['format'] = 'Y-m-d H:i:s'
 
                 #fdict['editor'] = "new Ext.ux.form.DateTime({hiddenFormat:'Y-m-d H:i', dateFormat:'Y-m-D', timeFormat:'H:i'})"
             if  field.__class__.__name__ == 'DateField':
@@ -118,7 +103,6 @@ class ProtoGridFactory(object):
                 fdict['format'] = 'Y-m-d'
                 #fdict['renderer'] = 'Ext.util.' 
                 #fdict['editor'] = "new Ext.form.DateField({format:'Y-m-d'})"
-                
                 
             elif field.__class__.__name__ == 'IntegerField':
                 fdict['xtype'] = 'numbercolumn'
@@ -134,8 +118,9 @@ class ProtoGridFactory(object):
                 #fdict['editor'] = 'new Ext.form.NumberField()'
                 
             elif  field.__class__.__name__ == 'ForeignKey':
+                fdict['query_code'] = 'numbercolumn '
                 pass
-                # renderer : display FK str as hoices  ( trop d'options??  ) 
+                # TODO: Zoom,  Convertir ID en __unicode__ 
                 
 #            elif field.choices:
 #                #print 'FIELD CHOICES', field.choices
@@ -191,6 +176,97 @@ class ProtoGridFactory(object):
         return fields
                         
                         
+        
+    def to_grid(self, queryset, start = 0, limit = 0, totalcount = None, json_add = {}, colModel = None, sort_field = 'id', sort_direction = 'DESC', protoConcept = ''):
+        """ return the given queryset as an ExtJs grid config
+            includes full metadata (columns, renderers, totalcount...)
+            includes the rows data
+            to be used in combination with ProtoAutoGrid 
+        """
+        try:
+            if not totalcount: 
+                totalcount = queryset.count()
+    
+            base_fields = self.get_fields(colModel)
+            protoDetails = self.get_details()
+            
+            #Todo : Debe ser buscao en la META
+            id_field = base_fields[0]['name']
+                
+            jsondict = {
+                 'succes':True,
+                 'metaData':{
+                     'root':'rows',
+                     'totalProperty':'totalCount',
+                     'successProperty':'success',
+                     'shortTitle': self.title,
+                     'description': self.title,
+
+                     'idProperty':id_field
+                    ,'sortInfo':{
+                       "field": sort_field
+                       ,"direction": sort_direction
+                    }
+                    ,'fields':base_fields
+    
+    #                ,'protoTabs':[
+    #                     {'T1': ['Col1','Col2']}, 
+    #                     {'T2': ['Col3','Col2']},
+    #                     ]    
+                    ,'protoDetails': protoDetails
+                }
+#                ,'rows':self.get_rows(base_fields, queryset, start, limit)
+                ,'rows':[]
+                ,'totalCount':totalcount
+            }
+            
+            if json_add:
+                jsondict.update(json_add)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]        
+        
+        return utils.JSONserialise(jsondict) 
+        
+
+    def get_details(self):  
+ 
+#        cllRelationship = models.get_model('metaDb', 'Relationship').objects.filter( baseConcept = self.nomConcept )
+ 
+        # TODO: Deberia recorrer los vinculos y no las relacion,  ojo con la llave 
+        # Recorre las relaciones : protoDetails = "{'Concpet1': 'Id = %Id',  'Concept2': 'Id = %Id'}"
+#        protoDetails = {}
+#        for mRelation in cllRelationship:
+#            protoDetails[ mRelation.concept.code ] = mRelation.baseConcept.lower() + '__id'
+         
+        return self.protoAdmin.get( 'protoDetails', {})
+
+
+    def getUdp( self, fdict, protoField, udpCode , udpType, udpDefault ):
+        
+        udpReturn = udpDefault
+         
+        try:
+            udpReturn = protoField.get( udpCode , udpDefault )
+            
+            if ( udpType == 'Boolean' ):
+                if (udpReturn[0].lower() in ( 't','y','o', '1')): 
+                    udpReturn = True
+                else: udpReturn = False 
+
+            if ( udpType == 'Numeric' ):
+                try:
+                    udpReturn = int( udpReturn  )
+                except: udpReturn = udpDefault
+
+            if (udpReturn != udpDefault ): 
+                fdict[udpCode] = udpReturn   
+             
+        except: 
+            pass
+        
+        return 
+
+
     def get_rows(self, fields, queryset, start, limit):
         """ 
             return the row list from given queryset 
@@ -231,99 +307,7 @@ class ProtoGridFactory(object):
 
         return rows
          
-        
-    def to_grid(self, queryset, start = 0, limit = 0, totalcount = None, json_add = {}, colModel = None, sort_field = 'id', sort_direction = 'DESC', protoConcept = ''):
-        """ return the given queryset as an ExtJs grid config
-            includes full metadata (columns, renderers, totalcount...)
-            includes the rows data
-            to be used in combination with ProtoAutoGrid 
-        """
-        try:
-            if not totalcount: 
-                totalcount = queryset.count()
-    
-            base_fields = self.get_fields(colModel)
-            protoDetails = self.get_details()
-            
-            #Todo : Debe ser buscao en la META
-            id_field = base_fields[0]['name']
-                
-            jsondict = {
-                 'succes':True,
-                 'metaData':{
-                     'root':'rows',
-                     'totalProperty':'totalCount',
-                     'successProperty':'success',
-                     'shortTitle': protoConcept,
-                     'description': protoConcept,
-
-                     'idProperty':id_field
-                    ,'sortInfo':{
-                       "field": sort_field
-                       ,"direction": sort_direction
-                    }
-                    ,'fields':base_fields
-    
-    #                ,'protoTabs':[
-    #                     {'T1': ['Col1','Col2']}, 
-    #                     {'T2': ['Col3','Col2']},
-    #                     ]    
-                    ,'protoDetails': protoDetails
-                }
-#                ,'rows':self.get_rows(base_fields, queryset, start, limit)
-                ,'rows':[]
-                ,'totalCount':totalcount
-            }
-            
-            if json_add:
-                jsondict.update(json_add)
-        except:
-            print "Unexpected error:", sys.exc_info()[0]        
-        
-        return utils.JSONserialise(jsondict) 
-        
-    class Meta:
-        exclude = []
-        viewPosition = []
-        fields_conf = {}
-
-    def get_details(self):  
- 
-        cllRelationship = models.get_model('metaDb', 'Relationship').objects.filter( baseConcept = self.nomConcept )
- 
-        # TODO: Deberia recorrer los vinculos y no las relacion,  ojo con la llave 
-        # Recorre las relaciones : protoDetails = "{'Concpet1': 'Id = %Id',  'Concept2': 'Id = %Id'}"
-        protoDetails = {}
-        for mRelation in cllRelationship:
-            protoDetails[ mRelation.concept.code ] = mRelation.baseConcept.lower() + '__id'
-         
-        return protoDetails
-
-
-    def getUdp( self, fdict, mUdps, udpCode , udpType, udpDefault ):
-        
-        udpReturn = udpDefault
-         
-        try:
-            mUdp =  mUdps.get( code = udpCode )
-            udpReturn = mUdp.valueUdp
-            
-            if ( udpType == 'Boolean' ):
-                if (udpReturn[0].lower() in ( 't','y','o', '1')): 
-                    udpReturn = True
-                else: udpReturn = False 
-
-            if ( udpType == 'Numeric' ):
-                try:
-                    udpReturn = int( udpReturn  )
-                except: udpReturn = udpDefault
-
-            if (udpReturn != udpDefault ): 
-                fdict[udpCode] = udpReturn   
-             
-        except: 
-            pass
-        
-        return 
-
-
+#    class Meta:
+#        exclude = []
+#        viewPosition = []
+#        fields_conf = {}

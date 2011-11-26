@@ -128,10 +128,9 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
             if (tmpStore.protoMasterId == idMasterGrid ) { return; };
     
             tmpStore.clearFilter();
-            tmpStore.getProxy().extraParams.protoFilterBase = '{"' + tmpStore.protoDetailKey + '" : ' + idMasterGrid + ',}';
+            tmpStore.getProxy().extraParams.protoFilterBase = '{"' + tmpStore.detailField + '" : ' + idMasterGrid + ',}';
             tmpStore.protoMasterId = idMasterGrid;
             tmpStore.load();
-                    
             
         };
 
@@ -209,14 +208,15 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
             // Definicion grilla Detail  ============================================================================= 
             var detailGrid = Ext.create('ProtoUL.view.ProtoGrid', {
                 protoConcept : protoConcept,  
-                protoFilterBase : '{"' + item.protoFilter + '" : ' +  idMasterGrid + ',}',
+                protoFilterBase : '{"' + item.detailField + '" : ' +  idMasterGrid + ',}',
 
                 // Para saber de q linea del maestro  depende  
                 protoMasterId: idMasterGrid,
             }) ; 
 
             // guarda el store con el indice apropiado   
-            detailGrid.store.protoDetailKey = item.protoFilter;
+            detailGrid.store.detailField = item.detailField;
+            detailGrid.store.masterField = item.masterField;
             detailGrid.store.protoConcept = protoConcept;
             
             cllStoreDet[item.ixTab] = detailGrid.store ;

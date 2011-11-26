@@ -97,11 +97,11 @@ Ext.define('FeedViewer.FeedPanel', {
 
 
 // template method 
-//    afterRender: function(){
-//        this.callParent(arguments);
-//        var view = this.view;
-//        view.getSelectionModel().select(view.store.first());
-//    },
+   afterRender: function(){
+       this.callParent(arguments);
+       var view = this.view;
+       view.getSelectionModel().select(view.store.first());
+   },
 
 
     /**
