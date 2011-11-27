@@ -3,6 +3,9 @@ import utils
 from django.db import models
 from globale.admin.sites import  site
 
+from django.conf import settings
+
+
 # Si el campo no esta en la lista de campos a presentar se crea de manera virtual 
 from utils import VirtualField
 
@@ -13,9 +16,11 @@ def verifyList( obj ):
     if type( obj ) != type([]):  [obj]
     return obj 
 
+
 def verifyStr( vrBase , vrDefault ):
     sAux = vrBase or vrDefault
     return  u'%s' % sAux 
+
 
 class ProtoGridFactory(object):
 
@@ -29,29 +34,30 @@ class ProtoGridFactory(object):
         self.nomConcept = self.model._meta.object_name 
         self.title = self.model._meta.verbose_name.title()
         
-        model_fields = self.model._meta._fields()
+        self.model_fields = self.model._meta._fields()
 
         #DGT Siempre existe, la creacion del site la asigna por defecto 
-        model_admin = site._registry.get( model )
+        self.model_admin = site._registry.get( model )
 
         self.protoModel = getattr(model, 'protoExt', {})
-        self.protoAdmin = getattr(model_admin, 'protoExt', {})
+        self.protoAdmin = getattr(self.model_admin, 'protoExt', {})
 
-        excludes =  verifyList( getattr(model_admin , 'exclude', [])) 
-        list_display = verifyList( getattr(model_admin , 'list_display', []))
+        excludes =  verifyList( getattr(self.model_admin , 'exclude', [])) 
+        list_display = verifyList( getattr(self.model_admin , 'list_display', []))
         
 #       REORDER  (include )  cols if defined  
-        if len( list_display ) > 2 :   # Por defecto solo vienen  Chk, _str_         
+        if len( list_display ) > 2 :   # Por defecto solo vienen  Chk, _str_
+            
             for field in list_display:
                 added = False
-                for f in model_fields:
+                for f in self.model_fields:
                     if f.name == field:
                         added = True
                         self.base_fields.append(f)
 #                if not added:
 #                    self.base_fields.append(VirtualField(field))
         else:
-            self.base_fields = model_fields
+            self.base_fields = self.model_fields
 
         
         for field in self.base_fields:
@@ -118,13 +124,13 @@ class ProtoGridFactory(object):
                 #fdict['editor'] = 'new Ext.form.NumberField()'
                 
             elif  field.__class__.__name__ == 'ForeignKey':
-                #TODO: Agregar columna __unicode__ de la tabla padre, con el header definido 
+                # TODO: Zoom,  Convertir ID en __unicode__ 
+                # TODO: Agregar columna __unicode__ de la tabla padre, con el header definido 
                 #y ocultar la columna de la llave 
                 fdict['xtype'] = 'numbercolumn '
-                self.fields.append(fdict)
+#                self.fields.append(fdict)
 
                 pass
-                # TODO: Zoom,  Convertir ID en __unicode__ 
                 
 #            elif field.choices:
 #                #print 'FIELD CHOICES', field.choices
@@ -136,10 +142,11 @@ class ProtoGridFactory(object):
 #            if getattr(self.Meta, 'fields_conf', {}).has_key(field.name):
 #                fdict.update(self.Meta.fields_conf[field.name])
                 
-               # print fdict
             self.fields.append(fdict)
-        #for field in self.model:
-        #    print field
+         
+           
+        #TODO: Agregar el PK Siempre ( Verificar si esta u agregarlo ) 
+
     
     def get_field(self, name):  
         for f in self.fields:
@@ -233,16 +240,33 @@ class ProtoGridFactory(object):
         
 
     def get_details(self):  
- 
-#        cllRelationship = models.get_model('metaDb', 'Relationship').objects.filter( baseConcept = self.nomConcept )
- 
-        # TODO: Deberia recorrer los vinculos y no las relacion,  ojo con la llave 
-        # Recorre las relaciones : protoDetails = "{'Concpet1': 'Id = %Id',  'Concept2': 'Id = %Id'}"
-#        protoDetails = {}
-#        for mRelation in cllRelationship:
-#            protoDetails[ mRelation.concept.code ] = mRelation.baseConcept.lower() + '__id'
-         
-        return self.protoAdmin.get( 'protoDetails', {})
+
+        # TODO: Agregar y probar m2m
+        # TODO: Configuar el master, cuando es una tabla heredada, hay q buscar el parent oMeta.get_parent_list()  ( y si hay multi herencia ) 
+        
+        # Inicializa con los valores definidos,   
+        details = self.protoAdmin.get( 'protoDetails', []) 
+
+        # Si no han sido definido genera por defecto  
+        if (len( details )  == 0 ):        
+            opts = self.model._meta
+            for rel in opts.get_all_related_objects(): # + opts.get_all_related_many_to_many_objects():
+    
+                oMeta = rel.model._meta         
+    
+                details.append({
+                    "menuText"      : oMeta.verbose_name.title(), 
+                    "conceptDetail" : oMeta.app_label + '.' + oMeta.object_name, 
+                    "detailField"   : opts.module_name + '__pk',                    # rel.field.attname,
+                    "masterField"   : 'pk',                                         #  oMeta.pk.name ,
+                    })
+    
+            # Lo imprime en el debuger para poder copiarlo a la definicion 
+            if settings.DEBUG: 
+                print opts.object_name, details 
+                
+            
+        return details 
 
 
     def getUdp( self, fdict, protoField, udpCode , udpType, udpDefault ):

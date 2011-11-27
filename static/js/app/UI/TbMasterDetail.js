@@ -145,8 +145,15 @@ Ext.define('ProtoUL.UI.TbMasterDetail', {
             for (var vDet in pDetails) {
                 // console.log( pDetails[vTab] + " ");
                 bDetails = true;
+                
+                if (pDetails[vDet].menuText == '-') { 
+                    var item = menuDetail.add({ xtype: 'menuseparator' });
+                    continue
+                }
+                
                 var item = menuDetail.add({
-                    text: pDetails[vDet].conceptDetail,
+                    text: pDetails[vDet].menuText,
+                    detail: pDetails[vDet].conceptDetail,
                     detailField: pDetails[vDet].detailField,
                     masterField: pDetails[vDet].masterField,
                     ixTab: ixTabC,

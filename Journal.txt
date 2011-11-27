@@ -1,3 +1,42 @@
+11/11/26  Autolink
+
+	La funcionalidad de autolink, examina el modelo para agregar las tablas relacionadas, 
+	maestros  o detalles, 
+
+	para probarlo cree las tablas siguientes 
+
+	class Tabla1(models.Model):
+	    code1 = models.CharField(blank = True, null = True, max_length=200 )
+
+	class Tabla11(models.Model):
+	    code1 = models.CharField(blank = True, null = True, max_length=200 )
+	    tabla1a = models.ForeignKey('Tabla1', related_name= 'prueba1a')
+	    tabla1b = models.ForeignKey('Tabla1', related_name= 'prueba1b')
+	    tabla1c = models.ForeignKey('Tabla1', related_name= '+')
+	    
+	class Tabla12(models.Model):
+	    code1 = models.CharField(blank = True, null = True, max_length=200 )
+	    tabla1a = models.ForeignKey('Tabla1')
+
+
+	La Tabla11 tiene 3 relaciones a la tabla1, la 1c no tiene relatedName,  por lo tanto no aparece 
+	mapeada en la tabla ppa. 
+
+
+	model._meta._name_map 
+	
+	_related_objects_cache  Contiene la informacion
+
+**	hay una coleccion parents !!!   
+	._meta.get_parent_list():  Solo las tablas con herencia ?? 
+
+
+	for rel in opts.get_all_related_objects(): # + opts.get_all_related_many_to_many_objects():
+
+	    rel.model._meta.object_name
+	    rel.model._meta.pk.name
+	    rel.field.name
+
 11/10/27  MAestro detalle 
 
 		MAnejar un panel de detalle resulto ser mas dificil q manejar los tabs al momento 

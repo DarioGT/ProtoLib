@@ -141,7 +141,7 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
 
         var _masterDetail  = this ;         
         
-        var protoConcept = item.text;
+        var protoConcept = item.detail;
         var protoTabs = this.protoTabs;
         var cllStoreDet = this.cllStoreDet;  
 
@@ -222,7 +222,7 @@ Ext.define('ProtoUL.view.ProtoMasterDetail', {
             cllStoreDet[item.ixTab] = detailGrid.store ;
 
             var tab = protoTabs.add({
-                title: protoConcept,
+                title: item.text ,
                 layout: 'fit',
                 items: detailGrid,
                 ixTab: item.ixTab

@@ -83,7 +83,9 @@ Ext.define('ProtoUL.view.ProtoGrid' ,{
         var myColumns = [];
 
          // * adding RowNumberer  
-        myColumns.push(Ext.create('Ext.grid.RowNumberer'));
+        myColumns.push(Ext.create('Ext.grid.RowNumberer', { 
+            "width":37
+            }));
 
 
         // DGT** Creacion de columnas  
